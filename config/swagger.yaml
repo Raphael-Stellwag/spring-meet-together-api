@@ -1,0 +1,969 @@
+---
+swagger: "2.0"
+info:
+  description: "This file documents the meet-together api."
+  version: "1.0.0"
+  title: "Swagger Meet Together"
+  termsOfService: ""
+host: "localhost:8080"
+basePath: "/api/v1"
+tags:
+  - name: "event"
+    description: "Operations about event"
+  - name: "user"
+    description: "Operations about user"
+  - name: "token"
+    description: "Operations about jwt (JSON Web Tokens)"
+  - name: "message"
+    description: "Messages from users in an event. The messages can also be generated"
+  - name: "time place suggestion"
+    description: "Suggest a place and time to meet"
+  - name: "mail"
+    description: "Send a mail"
+  - name: "ping"
+    description: "Test connection"
+schemes:
+  - "https"
+  - "http"
+paths:
+  /ping:
+    get:
+      tags:
+        - "ping"
+      summary: "Test if the server is reachable"
+      description: ""
+      operationId: "ping"
+      responses:
+        "200":
+          description: "successful operation"
+      x-swagger-router-controller: "Ping"
+  /user:
+    post:
+      tags:
+        - "user"
+      summary: "Add a new user to the database"
+      description: ""
+      operationId: "addUser"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "User object that needs to be added to the database"
+          required: true
+          schema:
+            $ref: "#/definitions/User"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/User"
+        "400":
+          description: "Invalid input, probably missing neccessary properties in body"
+      x-swagger-router-controller: "User"
+  /user/login:
+    put:
+      tags:
+        - "user"
+      summary: "User wants to login to registered User"
+      description: ""
+      operationId: "loginUser"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "user"
+          description: "User object with password & email"
+          required: true
+          schema:
+            $ref: "#/definitions/User"
+        - name: "Authorization"
+          in: "header"
+          description: "JWT Token"
+          required: true
+          type: "string"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/User"
+        "400":
+          description: "User credentials not valid"
+        "403":
+          description: "JWT not valid"
+      x-swagger-router-controller: "User"
+  /user/{userId}:
+    get:
+      tags:
+        - "user"
+      summary: "Get User data by ID"
+      description: "Returns a single user"
+      operationId: "getUserById"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "userId"
+          in: "path"
+          description: "ID of user to return"
+          required: true
+          type: "string"
+        - name: "Authorization"
+          in: "header"
+          description: "JWT Token"
+          required: true
+          type: "string"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/User"
+        "403":
+          description: "Token was not valid"
+        "404":
+          description: "User not found"
+      x-swagger-router-controller: "User"
+  /user/{userId}/register:
+    put:
+      tags:
+        - "user"
+      summary: "user decided to register an account (with password)"
+      description: ""
+      operationId: "registerUser"
+      produces:
+        - "application/json"
+      consumes:
+        - "application/json"
+      parameters:
+        - name: "userId"
+          in: "path"
+          description: "ID of user to return"
+          required: true
+          type: "string"
+        - name: "user"
+          in: "body"
+          description: "user object with name, email and password property"
+          required: true
+          schema:
+            $ref: "#/definitions/User"
+        - name: "Authorization"
+          in: "header"
+          description: "JWT Token"
+          required: true
+          type: "string"
+      responses:
+        "200":
+          description: "successful operation, returns user without password"
+          schema:
+            $ref: "#/definitions/User"
+        "400":
+          description: "Already registered"
+        "403":
+          description: "Token was not valid"
+        "404":
+          description: "User not found"
+      x-swagger-router-controller: "User"
+  /user/{userId}/rename:
+    put:
+      tags:
+        - "user"
+      summary: "changes the name of a user"
+      description: "Returns a single user"
+      operationId: "renameUser"
+      produces:
+        - "application/json"
+      consumes:
+        - "application/json"
+      parameters:
+        - name: "userId"
+          in: "path"
+          description: "ID of user to return"
+          required: true
+          type: "string"
+        - name: "username"
+          in: "body"
+          description: "user object just with name property"
+          required: true
+          schema:
+            $ref: "#/definitions/User"
+        - name: "Authorization"
+          in: "header"
+          description: "JWT Token"
+          required: true
+          type: "string"
+      responses:
+        "200":
+          description: "successful operation, returns user without password"
+          schema:
+            $ref: "#/definitions/User"
+        "403":
+          description: "Token was not valid"
+        "404":
+          description: "User not found"
+      x-swagger-router-controller: "User"
+  /user/{userId}/event:
+    get:
+      tags:
+        - "event"
+      summary: "get all events of a user"
+      description: ""
+      operationId: "getEvents"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "userId"
+          in: "path"
+          description: "ID of user who creates the new event"
+          required: true
+          type: "string"
+        - name: "Authorization"
+          in: "header"
+          description: "JWT Token"
+          required: true
+          type: "string"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Events"
+        "403":
+          description: "Token was not valid"
+        "404":
+          description: "User not found"
+      x-swagger-router-controller: "Event"
+    post:
+      tags:
+        - "event"
+      summary: "creates a new event"
+      description: ""
+      operationId: "addEvent"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "userId"
+          in: "path"
+          description: "ID of user who creates the new event"
+          required: true
+          type: "string"
+        - name: "Authorization"
+          in: "header"
+          description: "JWT Token"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          description: "Event data to store in database"
+          required: true
+          schema:
+            $ref: "#/definitions/Event"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Event"
+        "400":
+          description: "Event Data not valid"
+        "403":
+          description: "Token was not valid"
+        "404":
+          description: "User not found"
+      x-swagger-router-controller: "Event"
+  /user/{userId}/event/{eventId}:
+    put:
+      tags:
+        - "event"
+      summary: "updates an existing event"
+      description: ""
+      operationId: "updateEvent"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          description: "JWT Token"
+          required: true
+          type: "string"
+        - name: "userId"
+          in: "path"
+          description: "ID of user who has created the existing event"
+          required: true
+          type: "string"
+        - name: "eventId"
+          in: "path"
+          description: "ID of event which needs to be updated"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "eventData"
+          description: "Event data to update in database"
+          required: true
+          schema:
+            $ref: "#/definitions/Event"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Event"
+        "400":
+          description: "Event Data not valid, User not allowed to edit this event"
+        "403":
+          description: "Token was not valid"
+        "404":
+          description: "User or Event not found"
+      x-swagger-router-controller: "Event"
+    delete:
+      tags:
+        - "event"
+      summary: "deletes the existing event"
+      description: ""
+      operationId: "deleteEvent"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          description: "JWT Token"
+          required: true
+          type: "string"
+        - name: "userId"
+          in: "path"
+          description: "ID of user who has created the existing event"
+          required: true
+          type: "string"
+        - name: "eventId"
+          in: "path"
+          description: "ID of event which needs to be deleted"
+          required: true
+          type: "string"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/ApiResponse"
+        "400":
+          description: "User not allowed to delete this event"
+        "403":
+          description: "Token was not valid"
+        "404":
+          description: "User or Event not found"
+      x-swagger-router-controller: "Event"
+  /event/{eventId}/user/{userId}:
+    put:
+      tags:
+        - "event"
+      summary: "Add an User to the event"
+      description: ""
+      operationId: "addUserToEvent"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          description: "JWT Token"
+          required: true
+          type: "string"
+        - name: "userId"
+          in: "path"
+          description: "ID of user who has created the existing event"
+          required: true
+          type: "string"
+        - name: "eventId"
+          in: "path"
+          description: "ID of event which needs to be updated"
+          required: true
+          type: "string"
+        - name: "accesstoken"
+          in: "query"
+          description: "Accesstoken from event to be allowed to access the event"
+          required: true
+          type: "string"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Event"
+        "400":
+          description: "accesstoken not valid; User is already in the event"
+        "403":
+          description: "Token was not valid"
+        "404":
+          description: "User or Event not found"
+      x-swagger-router-controller: "Event"
+    delete:
+      tags:
+        - "event"
+      summary: "Deletes the user from the event"
+      description: "User dont want to particapte in the event anymore. He cant be creator of the event"
+      operationId: "deleteUserFromEvent"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          description: "JWT Token"
+          required: true
+          type: "string"
+        - name: "userId"
+          in: "path"
+          description: "ID of user who has created the existing event"
+          required: true
+          type: "string"
+        - name: "eventId"
+          in: "path"
+          description: "ID of event which needs to be updated"
+          required: true
+          type: "string"
+      responses:
+        "200":
+          description: "successful operation"
+        "403":
+          description: "authorization failed"
+        "404":
+          description: "User is not in this event"
+      x-swagger-router-controller: "Event"
+  /event/{eventId}/participants:
+    get:
+      tags:
+        - "event"
+      summary: "Get all participants of an event"
+      description: ""
+      operationId: "getAllParticipants"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          description: "JWT Token"
+          required: true
+          type: "string"
+        - name: "eventId"
+          in: "path"
+          description: "ID of event to get participants from"
+          required: true
+          type: "string"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Participants"
+        "403":
+          description: "authorization failed"
+        "404":
+          description: "Event does not exist"
+      x-swagger-router-controller: "Event"
+  /event/{eventId}/time-place-suggestion:
+    get:
+      tags:
+        - "time place suggestion"
+      summary: "Get all Time-Place suggestions of an event"
+      description: ""
+      operationId: "getAllTimePlaceSuggestions"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          description: "JWT Token"
+          required: true
+          type: "string"
+        - name: "eventId"
+          in: "path"
+          description: "ID of event"
+          required: true
+          type: "string"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/TimePlaceSuggestions"
+        "403":
+          description: "authorization failed"
+        "404":
+          description: "Event does not exist"
+      x-swagger-router-controller: "TimePlaceSuggestion"
+    post:
+      tags:
+        - "time place suggestion"
+      summary: "Creates a new Time-Place suggestions with no user added to it"
+      description: ""
+      operationId: "createsTimePlaceSuggestions"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          description: "JWT Token"
+          required: true
+          type: "string"
+        - name: "eventId"
+          in: "path"
+          description: "ID of event"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "timePlaceSuggestion"
+          description: "time-place suggestion that needs to be added to the database"
+          required: true
+          schema:
+            $ref: "#/definitions/TimePlaceSuggestion"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/TimePlaceSuggestion"
+        "400":
+          description: "Invalid input data"
+        "403":
+          description: "authorization failed"
+        "404":
+          description: "Event does not exist"
+      x-swagger-router-controller: "TimePlaceSuggestion"
+  /event/{eventId}/time-place-suggestion/{timePlaceId}/user/{userId}:
+    put:
+      tags:
+        - "time place suggestion"
+      summary: "Adds User to existing Time-Place suggestions of an event"
+      description: ""
+      operationId: "addUserToTimePlaceSuggestion"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          description: "JWT Token"
+          required: true
+          type: "string"
+        - name: "eventId"
+          in: "path"
+          description: "ID of event"
+          required: true
+          type: "string"
+        - name: "timePlaceId"
+          in: "path"
+          description: "ID of time-place suggestion"
+          required: true
+          type: "string"
+        - name: "userId"
+          in: "path"
+          description: "ID of user"
+          required: true
+          type: "string"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/TimePlaceSuggestion"
+        "400":
+          description: "User is already in the time-place suggestion; user is not in the event"
+        "403":
+          description: "authorization failed"
+        "404":
+          description: "Event / User / Time-place suggestion does not exist"
+      x-swagger-router-controller: "TimePlaceSuggestion"
+    delete:
+      tags:
+        - "time place suggestion"
+      summary: "Deletes User from existing Time-Place suggestions of an event"
+      description: ""
+      operationId: "deleteUserFromTimePlaceSuggestion"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          description: "JWT Token"
+          required: true
+          type: "string"
+        - name: "eventId"
+          in: "path"
+          description: "ID of event"
+          required: true
+          type: "string"
+        - name: "timePlaceId"
+          in: "path"
+          description: "ID of time-place suggestion"
+          required: true
+          type: "string"
+        - name: "userId"
+          in: "path"
+          description: "ID of user"
+          required: true
+          type: "string"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/ApiResponse"
+        "400":
+          description: "User is not in the time-place suggestion"
+        "403":
+          description: "authorization failed"
+        "404":
+          description: "Event / User / Time-place suggestion does not exist"
+      x-swagger-router-controller: "TimePlaceSuggestion"
+  /event/{eventId}/time-place-suggestion/{timePlaceId}/user/{userId}/choosen:
+    put:
+      tags:
+        - "time place suggestion"
+      summary: "Sets an existing Time-Place suggestions to the final details of the event"
+      description: ""
+      operationId: "timePlaceSuggestionChoosen"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          description: "JWT Token"
+          required: true
+          type: "string"
+        - name: "eventId"
+          in: "path"
+          description: "ID of event"
+          required: true
+          type: "string"
+        - name: "timePlaceId"
+          in: "path"
+          description: "ID of time-place suggestion"
+          required: true
+          type: "string"
+        - name: "userId"
+          in: "path"
+          description: "ID of user"
+          required: true
+          type: "string"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Event"
+        "400":
+          description: "User is not in the event"
+        "401":
+          description: "User not allowed to set the time-place suggestion"
+        "403":
+          description: "authorization failed"
+        "404":
+          description: "Event / User / Time-place suggestion does not exist"
+      x-swagger-router-controller: "TimePlaceSuggestion"
+  /event/{eventId}/messages:
+    get:
+      tags:
+        - "message"
+      summary: "Get Messages from an event"
+      description: ""
+      operationId: "getMessages"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          description: "JWT Token"
+          required: true
+          type: "string"
+        - name: "eventId"
+          in: "path"
+          description: "ID of event"
+          required: true
+          type: "string"
+        - name: "count"
+          in: "query"
+          description: "Number of messages to return"
+          required: false
+          type: "string"
+        - name: "last-message"
+          in: "query"
+          description: "ID of last message"
+          required: false
+          type: "string"
+        - name: "direction"
+          in: "query"
+          description: "Direction (forward -> next messages; backward -> get Messages before last-messages)"
+          required: false
+          type: "string"
+          enum:
+            - "forward"
+            - "backward"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Messages"
+        "403":
+          description: "authorization failed"
+        "404":
+          description: "Event does not exist"
+      x-swagger-router-controller: "Message"
+  /event/{eventId}/user/{userId}/message:
+    post:
+      tags:
+        - "message"
+      summary: "Creates a new Message in an event"
+      description: ""
+      operationId: "addMessage"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          description: "JWT Token"
+          required: true
+          type: "string"
+        - name: "eventId"
+          in: "path"
+          description: "ID of event"
+          required: true
+          type: "string"
+        - name: "userId"
+          in: "path"
+          description: "ID of User"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "message"
+          description: "message that needs to be added to the database"
+          required: true
+          schema:
+            $ref: "#/definitions/Message"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Message"
+        "400":
+          description: "Invalid input data, User not in Event"
+        "403":
+          description: "authorization failed"
+        "404":
+          description: "Event / User does not exist"
+      x-swagger-router-controller: "Message"
+  /event/{eventId}/mail:
+    post:
+      tags:
+        - "mail"
+      summary: "Sends a mail to some users"
+      description: ""
+      operationId: "sendMail"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          description: "JWT Token"
+          required: true
+          type: "string"
+        - name: "eventId"
+          in: "path"
+          description: "ID of event"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "mail_body"
+          description: "Mail Body to send to the recipients"
+          required: true
+          schema:
+            $ref: "#/definitions/Mail"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Message"
+        "400":
+          description: "Invalid input data"
+        "403":
+          description: "authorization failed"
+      x-swagger-router-controller: "Mail"
+  /token/create:
+    get:
+      tags:
+        - "token"
+      summary: "Creates a new JWT for the given user"
+      description: ""
+      operationId: "createToken"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          description: "Basic auth to address the user and create token for him"
+          required: true
+          type: "string"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Token"
+        "403":
+          description: "User / Password combination was wrong"
+      x-swagger-router-controller: "Token"
+  /token/verify:
+    get:
+      tags:
+        - "token"
+      summary: "Verifies the given token, if still valid"
+      description: ""
+      operationId: "verifyToken"
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          description: "JWT to verify"
+          required: true
+          type: "string"
+      responses:
+        "200":
+          description: "successful operation"
+        "410":
+          description: "Not anymore valid"
+      x-swagger-router-controller: "Token"
+definitions:
+  Token:
+    type: "object"
+    properties:
+      token:
+        type: "string"
+    example:
+      token: "token"
+  Event:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+      name:
+        type: "string"
+      description:
+        type: "string"
+      password:
+        type: "string"
+      accesstoken:
+        type: "string"
+      start_date:
+        type: "string"
+        format: "date-time"
+      end_date:
+        type: "string"
+        format: "date-time"
+      creator:
+        type: "boolean"
+        default: false
+    example:
+      password: "password"
+      name: "name"
+      description: "description"
+      accesstoken: "accesstoken"
+      start_date: "2000-01-23T04:56:07.000+00:00"
+      id: 0
+      end_date: "2000-01-23T04:56:07.000+00:00"
+  Events:
+    type: "array"
+    items:
+      $ref: "#/definitions/Event"
+  User:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+      email:
+        type: "string"
+      name:
+        type: "string"
+      password:
+        type: "string"
+      registered:
+        type: "boolean"
+        default: false
+    example:
+      name: "name"
+      password: "password"
+      id: 0
+      registered: true
+  Participant:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+      name:
+        type: "string"
+      creator:
+        type: "boolean"
+        default: false
+  Participants:
+    type: "array"
+    items:
+      $ref: "#/definitions/Participant"
+  TimePlaceSuggestion:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+      start_date:
+        type: "string"
+        format: "date-time"
+      end_date:
+        type: "string"
+        format: "date-time"
+      place:
+        type: "string"
+      link:
+        type: "string"
+      can_attend:
+        type: "array"
+        items:
+          $ref: "#/definitions/User"
+  TimePlaceSuggestions:
+    type: "array"
+    items:
+      $ref: "#/definitions/TimePlaceSuggestion"
+  Message:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+      user_name:
+        type: "string"
+      user_id:
+        type: "string"
+      time:
+        type: "string"
+        format: "date-time"
+      content:
+        type: "string"
+      generated:
+        type: "boolean"
+        default: false
+      generated_content_description:
+        type: "integer"
+        format: "int32"
+  Messages:
+    type: "array"
+    items:
+      $ref: "#/definitions/Message"
+  Mail:
+    type: "object"
+    properties:
+      recipients:
+        type: "array"
+        items:
+          type: "string"
+      subject:
+        type: "string"
+      html_content:
+        type: "string"
+  ApiResponse:
+    type: "object"
+    properties:
+      message:
+        type: "string"
+    example:
+      message: "message"
