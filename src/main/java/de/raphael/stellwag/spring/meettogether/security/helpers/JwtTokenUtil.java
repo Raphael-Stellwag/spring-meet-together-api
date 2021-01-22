@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import javax.validation.Valid;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
@@ -74,5 +73,13 @@ public class JwtTokenUtil implements Serializable {
     public Boolean validateToken(String token, String providedUsername) {
         final String username = getUsernameFromToken(token);
         return (username.equals(providedUsername) && !isTokenExpired(token));
+    }
+
+    public Boolean headerBelongsToUser(String authorizationHeader, String userName) {
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            String token = authorizationHeader.substring(7);
+            return validateToken(token, userName);
+        }
+        return false;
     }
 }

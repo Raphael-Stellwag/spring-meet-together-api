@@ -3,9 +3,11 @@ package de.raphael.stellwag.spring.meettogether.boundary;
 import de.raphael.stellwag.generated.api.UserApi;
 import de.raphael.stellwag.generated.dto.UserDto;
 import de.raphael.stellwag.spring.meettogether.control.UserService;
+import de.raphael.stellwag.spring.meettogether.error.MeetTogetherException;
+import de.raphael.stellwag.spring.meettogether.error.MeetTogetherExceptionEnum;
+import de.raphael.stellwag.spring.meettogether.security.helpers.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 
 import javax.validation.Valid;
@@ -15,10 +17,12 @@ import java.net.URI;
 public class UserApiImpl implements UserApi {
 
     private final UserService userService;
+    private final JwtTokenUtil jwtTokenUtil;
 
     @Autowired
-    public UserApiImpl(UserService userService) {
+    public UserApiImpl(UserService userService, JwtTokenUtil jwtTokenUtil) {
         this.userService = userService;
+        this.jwtTokenUtil = jwtTokenUtil;
     }
 
     @Override
@@ -45,6 +49,11 @@ public class UserApiImpl implements UserApi {
 
     @Override
     public ResponseEntity<UserDto> renameUser(String userId, @Valid UserDto username, String authorization) {
-        return null;
+        log.debug("User {} wants to rename to {}", userId, username.getName());
+        if (!jwtTokenUtil.headerBelongsToUser(authorization, userId)) {
+            throw new MeetTogetherException(MeetTogetherExceptionEnum.NOT_ALLOWED);
+        }
+        UserDto userDto = userService.renameUser(userId, username.getName());
+        return ResponseEntity.ok(userDto);
     }
 }
