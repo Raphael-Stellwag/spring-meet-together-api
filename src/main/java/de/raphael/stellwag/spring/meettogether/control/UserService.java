@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -37,7 +38,7 @@ public class UserService {
         userEntity.setRegistered(false);
         userEntity.setPassword(passwordEncoder.encode(body.getPassword()));
 
-        UserEntity writtenEntity = userRepository.save(userEntity);
+        UserEntity writtenEntity = userRepository.insert(userEntity);
 
         return entityToDto.getUserDto(writtenEntity);
     }
@@ -51,5 +52,47 @@ public class UserService {
         userEntity.setName(name);
         userEntity = userRepository.save(userEntity);
         return entityToDto.getUserDto(userEntity);
+    }
+
+    public Iterable<UserEntity> getUserEntities(List<String> ids) {
+        return userRepository.findAllById(ids);
+    }
+
+    public UserDto registerUser(UserDto user) {
+        Optional<UserEntity> optionalUserEntity = userRepository.findById(user.getId());
+        if (optionalUserEntity.isEmpty()) {
+            throw new MeetTogetherException(MeetTogetherExceptionEnum.USER_NOT_FOUND);
+        }
+        UserEntity userEntity = optionalUserEntity.get();
+        userEntity.setName(user.getName());
+        userEntity.setEmail(user.getEmail());
+        userEntity.setPassword(passwordEncoder.encode(user.getPassword()));
+        userEntity.setRegistered(true);
+        userEntity = userRepository.save(userEntity);
+        return entityToDto.getUserDto(userEntity);
+    }
+
+    public boolean doesEmailExist(String email) {
+        Optional<UserEntity> optionalUserEntity = userRepository.findByEmail(email);
+        return optionalUserEntity.isPresent();
+    }
+
+    public String getUserId(String email, String password) {
+        Optional<UserEntity> optionalUserEntity = userRepository.findByEmail(email);
+        if (optionalUserEntity.isEmpty()) {
+            throw new MeetTogetherException(MeetTogetherExceptionEnum.EMAIL_DOES_NOT_EXIST);
+        }
+        if (!passwordEncoder.matches(password, optionalUserEntity.get().getPassword())) {
+            throw new MeetTogetherException(MeetTogetherExceptionEnum.PASSWORD_NOT_CORRECT);
+        }
+        return optionalUserEntity.get().getId();
+    }
+
+    public UserDto getUserDto(String id) {
+        Optional<UserEntity> optionalUserEntity = userRepository.findById(id);
+        if (optionalUserEntity.isEmpty()) {
+            throw new MeetTogetherException(MeetTogetherExceptionEnum.USER_NOT_FOUND);
+        }
+        return entityToDto.getUserDto(optionalUserEntity.get());
     }
 }

@@ -9,10 +9,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @SpringBootApplication
 public class SpringMeetTogetherApiApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(SpringMeetTogetherApiApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(SpringMeetTogetherApiApplication.class, args);
+    }
 
-
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
 }

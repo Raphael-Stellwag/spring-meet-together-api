@@ -11,6 +11,7 @@ import javax.validation.Valid;
 @Component
 public class MailApiImpl implements MailApi {
 
+    //TODO implementation needed
     @Override
     public ResponseEntity<MessageDto> sendMail(String authorization, String eventId, @Valid MailDto mailBody) {
         return null;

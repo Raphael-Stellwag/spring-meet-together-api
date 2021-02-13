@@ -11,11 +11,13 @@ import javax.validation.Valid;
 @Controller
 public class MessageApiImpl implements MessageApi {
 
+    //TODO implementation needed
     @Override
     public ResponseEntity<MessageDto> addMessage(String authorization, String eventId, String userId, @Valid MessageDto message) {
         return null;
     }
 
+    //TODO implementation needed
     @Override
     public ResponseEntity<MessagesDto> getMessages(String authorization, String eventId, @Valid String count, @Valid String lastMessage, @Valid String direction) {
         return null;

@@ -1,5 +1,7 @@
 package de.raphael.stellwag.spring.meettogether.security.helpers;
 
+import de.raphael.stellwag.spring.meettogether.error.MeetTogetherException;
+import de.raphael.stellwag.spring.meettogether.error.MeetTogetherExceptionEnum;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -15,8 +17,6 @@ import java.util.function.Function;
 
 @Component
 public class JwtTokenUtil implements Serializable {
-
-    private static final long serialVersionUID = -2550185165626007488L;
 
     @Value("${jwt.expiration}")
     private long jwtTokenValidity;
@@ -81,5 +81,12 @@ public class JwtTokenUtil implements Serializable {
             return validateToken(token, userName);
         }
         return false;
+    }
+
+    public String getTokenFromHeader(String authorizationHeader) {
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            return authorizationHeader.substring(7);
+        }
+        throw new MeetTogetherException(MeetTogetherExceptionEnum.NO_JWT_IN_AUTHORIZATION_HEADER);
     }
 }

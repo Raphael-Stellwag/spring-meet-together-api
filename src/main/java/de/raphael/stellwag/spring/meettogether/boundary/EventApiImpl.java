@@ -6,31 +6,60 @@ import de.raphael.stellwag.generated.dto.EventDto;
 import de.raphael.stellwag.generated.dto.EventsDto;
 import de.raphael.stellwag.generated.dto.ParticipantsDto;
 import de.raphael.stellwag.spring.meettogether.control.EventService;
+import de.raphael.stellwag.spring.meettogether.control.ParticipantService;
+import de.raphael.stellwag.spring.meettogether.control.UserInEventService;
+import de.raphael.stellwag.spring.meettogether.error.MeetTogetherException;
+import de.raphael.stellwag.spring.meettogether.error.MeetTogetherExceptionEnum;
+import de.raphael.stellwag.spring.meettogether.security.helpers.JwtTokenUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.net.URI;
 
+@Slf4j
 @Controller
 public class EventApiImpl implements EventApi {
 
+    private final EventService eventService;
+    private final UserInEventService userInEventService;
+    private final JwtTokenUtil jwtTokenUtil;
+    private final ParticipantService participantService;
+
     @Autowired
-    private EventService eventService;
+    EventApiImpl(EventService eventService, UserInEventService userInEventService, JwtTokenUtil jwtTokenUtil, ParticipantService participantService) {
+        this.eventService = eventService;
+        this.userInEventService = userInEventService;
+        this.jwtTokenUtil = jwtTokenUtil;
+        this.participantService = participantService;
+    }
 
     @Override
+    @Transactional
     public ResponseEntity<EventDto> addEvent(String userId, String authorization, @Valid EventDto body) {
+        if (!jwtTokenUtil.headerBelongsToUser(authorization, userId)) {
+            throw new MeetTogetherException(MeetTogetherExceptionEnum.NOT_ALLOWED);
+        }
         EventDto newEvent = eventService.createNewEvent(userId, body);
         return ResponseEntity.created(URI.create("/api/v1/events/" + newEvent.getId())).body(newEvent);
     }
 
     @Override
     public ResponseEntity<EventDto> addUserToEvent(String authorization, String userId, String eventId, @NotNull @Valid String accesstoken) {
-        return null;
+        if (!jwtTokenUtil.headerBelongsToUser(authorization, userId) ||
+                !eventService.isAccessTokenCorrect(eventId, accesstoken)) {
+            throw new MeetTogetherException(MeetTogetherExceptionEnum.NOT_ALLOWED);
+        }
+        userInEventService.addUserToEvent(userId, eventId);
+        EventDto eventDto = eventService.getEvent(eventId, userId);
+        return ResponseEntity.ok(eventDto);
     }
 
+    //TODO implementation needed => not yet used
     @Override
     public ResponseEntity<ApiResponseDto> deleteEvent(String authorization, String userId, String eventId) {
         return null;
@@ -38,21 +67,41 @@ public class EventApiImpl implements EventApi {
 
     @Override
     public ResponseEntity<Void> deleteUserFromEvent(String authorization, String userId, String eventId) {
-        return null;
+        log.info("Delete user {} from event {}", userId, eventId);
+        if (!jwtTokenUtil.headerBelongsToUser(authorization, userId)) {
+            throw new MeetTogetherException(MeetTogetherExceptionEnum.NOT_ALLOWED);
+        }
+        userInEventService.deleteUserFromEvent(userId, eventId);
+        return ResponseEntity.ok().build();
     }
 
     @Override
     public ResponseEntity<ParticipantsDto> getAllParticipants(String authorization, String eventId) {
-        return null;
+        String userId = jwtTokenUtil.getUsernameFromToken(jwtTokenUtil.getTokenFromHeader(authorization));
+        if (!userInEventService.isUserInEvent(userId, eventId)) {
+            throw new MeetTogetherException(MeetTogetherExceptionEnum.USER_NOT_IN_EVENT);
+        }
+        ParticipantsDto participantsDto = participantService.getParticipantsOfEvent(eventId);
+        return ResponseEntity.ok(participantsDto);
     }
 
     @Override
     public ResponseEntity<EventsDto> getEvents(String userId, String authorization) {
-        return null;
+        if (!jwtTokenUtil.headerBelongsToUser(authorization, userId)) {
+            throw new MeetTogetherException(MeetTogetherExceptionEnum.NOT_ALLOWED);
+        }
+        EventsDto eventDtos = eventService.getEvents(userId);
+        return ResponseEntity.ok(eventDtos);
     }
 
     @Override
     public ResponseEntity<EventDto> updateEvent(String authorization, String userId, String eventId, @Valid EventDto eventData) {
-        return null;
+        if (!jwtTokenUtil.headerBelongsToUser(authorization, userId) ||
+                !eventService.hasUserCreatedEvent(userId, eventId) ||
+                !eventData.getId().equals(eventId)) {
+            throw new MeetTogetherException(MeetTogetherExceptionEnum.NOT_ALLOWED);
+        }
+        EventDto eventDto = eventService.updateEvent(eventData, userId);
+        return ResponseEntity.ok(eventDto);
     }
 }

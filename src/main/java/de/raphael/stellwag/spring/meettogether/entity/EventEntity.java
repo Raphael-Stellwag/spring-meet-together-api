@@ -24,4 +24,8 @@ public class EventEntity {
     @Indexed(unique = true)
     private String accesstoken;
 
+    private String creatorId;
+
+    private TimePlaceSuggestionEntity chosenTimePlaceSuggestionEntity;
+
 }

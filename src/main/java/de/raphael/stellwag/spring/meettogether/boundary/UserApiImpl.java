@@ -5,6 +5,7 @@ import de.raphael.stellwag.generated.dto.UserDto;
 import de.raphael.stellwag.spring.meettogether.control.UserService;
 import de.raphael.stellwag.spring.meettogether.error.MeetTogetherException;
 import de.raphael.stellwag.spring.meettogether.error.MeetTogetherExceptionEnum;
+import de.raphael.stellwag.spring.meettogether.security.control.MyUserDetailsService;
 import de.raphael.stellwag.spring.meettogether.security.helpers.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,11 +19,13 @@ public class UserApiImpl implements UserApi {
 
     private final UserService userService;
     private final JwtTokenUtil jwtTokenUtil;
+    private final MyUserDetailsService userDetailsService;
 
     @Autowired
-    public UserApiImpl(UserService userService, JwtTokenUtil jwtTokenUtil) {
+    public UserApiImpl(UserService userService, JwtTokenUtil jwtTokenUtil, MyUserDetailsService userDetailsService) {
         this.userService = userService;
         this.jwtTokenUtil = jwtTokenUtil;
+        this.userDetailsService = userDetailsService;
     }
 
     @Override
@@ -37,14 +40,25 @@ public class UserApiImpl implements UserApi {
         return null;
     }
 
+    //TODO delete authorization here
     @Override
     public ResponseEntity<UserDto> loginUser(@Valid UserDto user, String authorization) {
-        return null;
+        String userId = userService.getUserId(user.getEmail(), user.getPassword());
+        UserDto userDto = userService.getUserDto(userId);
+        return ResponseEntity.ok(userDto);
     }
 
     @Override
     public ResponseEntity<UserDto> registerUser(String userId, @Valid UserDto user, String authorization) {
-        return null;
+        if (!jwtTokenUtil.headerBelongsToUser(authorization, userId)) {
+            throw new MeetTogetherException(MeetTogetherExceptionEnum.NOT_ALLOWED);
+        }
+        if (userService.doesEmailExist(user.getEmail())) {
+            throw new MeetTogetherException(MeetTogetherExceptionEnum.EMAIL_ALREADY_EXISTS);
+        }
+        user.setId(userId);
+        UserDto userDto = userService.registerUser(user);
+        return ResponseEntity.ok(userDto);
     }
 
     @Override
