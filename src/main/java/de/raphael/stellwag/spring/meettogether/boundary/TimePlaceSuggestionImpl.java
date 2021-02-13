@@ -4,7 +4,10 @@ import de.raphael.stellwag.generated.api.TimePlaceSuggestionApi;
 import de.raphael.stellwag.generated.dto.EventDto;
 import de.raphael.stellwag.generated.dto.TimePlaceSuggestionDto;
 import de.raphael.stellwag.generated.dto.TimePlaceSuggestionsDto;
-import de.raphael.stellwag.spring.meettogether.control.*;
+import de.raphael.stellwag.spring.meettogether.control.EventService;
+import de.raphael.stellwag.spring.meettogether.control.TimePlaceSuggestionService;
+import de.raphael.stellwag.spring.meettogether.control.UserInEventService;
+import de.raphael.stellwag.spring.meettogether.control.UserInTimePlaceSuggestionService;
 import de.raphael.stellwag.spring.meettogether.error.MeetTogetherException;
 import de.raphael.stellwag.spring.meettogether.error.MeetTogetherExceptionEnum;
 import de.raphael.stellwag.spring.meettogether.security.helpers.JwtTokenUtil;
@@ -18,16 +21,14 @@ import javax.validation.Valid;
 public class TimePlaceSuggestionImpl implements TimePlaceSuggestionApi {
 
     private final JwtTokenUtil jwtTokenUtil;
-    private final UserService userService;
     private final EventService eventService;
     private final UserInEventService userInEventService;
     private final TimePlaceSuggestionService timePlaceSuggestionService;
     private final UserInTimePlaceSuggestionService userInTimePlaceSuggestionService;
 
     @Autowired
-    public TimePlaceSuggestionImpl(JwtTokenUtil jwtTokenUtil, UserService userService, EventService eventService, UserInEventService userInEventService, TimePlaceSuggestionService timePlaceSuggestionService, UserInTimePlaceSuggestionService userInTimePlaceSuggestionService) {
+    public TimePlaceSuggestionImpl(JwtTokenUtil jwtTokenUtil, EventService eventService, UserInEventService userInEventService, TimePlaceSuggestionService timePlaceSuggestionService, UserInTimePlaceSuggestionService userInTimePlaceSuggestionService) {
         this.jwtTokenUtil = jwtTokenUtil;
-        this.userService = userService;
         this.eventService = eventService;
         this.userInEventService = userInEventService;
         this.timePlaceSuggestionService = timePlaceSuggestionService;

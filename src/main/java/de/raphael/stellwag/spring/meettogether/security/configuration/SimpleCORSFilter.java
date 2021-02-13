@@ -14,10 +14,6 @@ import java.io.IOException;
 public class SimpleCORSFilter implements Filter {
 
     @Override
-    public void init(FilterConfig fc) throws ServletException {
-    }
-
-    @Override
     public void doFilter(ServletRequest req, ServletResponse resp,
                          FilterChain chain) throws IOException, ServletException {
         HttpServletResponse response = (HttpServletResponse) resp;
@@ -33,10 +29,6 @@ public class SimpleCORSFilter implements Filter {
             chain.doFilter(req, resp);
         }
 
-    }
-
-    @Override
-    public void destroy() {
     }
 
 }

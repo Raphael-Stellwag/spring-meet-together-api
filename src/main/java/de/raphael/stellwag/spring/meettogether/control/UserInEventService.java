@@ -47,7 +47,7 @@ public class UserInEventService {
 
     public boolean isUserInEvent(String userId, String eventId) {
         List<UserInEventEntity> userInEventEntities = userInEventRepository.findByUserIdAndEventId(userId, eventId);
-        return (userInEventEntities.size() > 0);
+        return (!userInEventEntities.isEmpty());
     }
 
     public List<String> getUserIdsFromEvent(String eventId) {

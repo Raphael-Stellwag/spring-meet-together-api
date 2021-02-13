@@ -5,7 +5,6 @@ import de.raphael.stellwag.spring.meettogether.entity.UserEntity;
 import de.raphael.stellwag.spring.meettogether.entity.UserRepository;
 import de.raphael.stellwag.spring.meettogether.error.MeetTogetherException;
 import de.raphael.stellwag.spring.meettogether.error.MeetTogetherExceptionEnum;
-import de.raphael.stellwag.spring.meettogether.helpers.DtoToEntity;
 import de.raphael.stellwag.spring.meettogether.helpers.EntityToDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,14 +19,12 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final DtoToEntity dtoToEntity;
     private final EntityToDto entityToDto;
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(UserRepository userRepository, DtoToEntity dtoToEntity, EntityToDto entityToDto, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, EntityToDto entityToDto, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
-        this.dtoToEntity = dtoToEntity;
         this.entityToDto = entityToDto;
         this.passwordEncoder = passwordEncoder;
     }

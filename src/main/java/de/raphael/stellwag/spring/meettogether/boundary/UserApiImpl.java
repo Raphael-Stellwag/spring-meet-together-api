@@ -5,7 +5,6 @@ import de.raphael.stellwag.generated.dto.UserDto;
 import de.raphael.stellwag.spring.meettogether.control.UserService;
 import de.raphael.stellwag.spring.meettogether.error.MeetTogetherException;
 import de.raphael.stellwag.spring.meettogether.error.MeetTogetherExceptionEnum;
-import de.raphael.stellwag.spring.meettogether.security.control.MyUserDetailsService;
 import de.raphael.stellwag.spring.meettogether.security.helpers.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,13 +18,11 @@ public class UserApiImpl implements UserApi {
 
     private final UserService userService;
     private final JwtTokenUtil jwtTokenUtil;
-    private final MyUserDetailsService userDetailsService;
 
     @Autowired
-    public UserApiImpl(UserService userService, JwtTokenUtil jwtTokenUtil, MyUserDetailsService userDetailsService) {
+    public UserApiImpl(UserService userService, JwtTokenUtil jwtTokenUtil) {
         this.userService = userService;
         this.jwtTokenUtil = jwtTokenUtil;
-        this.userDetailsService = userDetailsService;
     }
 
     @Override

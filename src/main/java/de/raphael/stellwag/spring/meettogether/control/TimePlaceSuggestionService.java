@@ -22,16 +22,15 @@ public class TimePlaceSuggestionService {
     private final TimePlaceSuggestionRepository timePlaceSuggestionRepository;
     private final EntityToDto entityToDto;
     private final DtoToEntity dtoToEntity;
-    private final UserInTimePlaceSuggestionService userInTimePlaceSuggestionService;
     private final ParticipantService participantService;
     private final EventService eventService;
 
     @Autowired
-    public TimePlaceSuggestionService(TimePlaceSuggestionRepository timePlaceSuggestionRepository, EntityToDto entityToDto, DtoToEntity dtoToEntity, UserInTimePlaceSuggestionService userInTimePlaceSuggestionService, ParticipantService participantService, EventService eventService) {
+    public TimePlaceSuggestionService(TimePlaceSuggestionRepository timePlaceSuggestionRepository, EntityToDto entityToDto, DtoToEntity dtoToEntity,
+                                      ParticipantService participantService, EventService eventService) {
         this.timePlaceSuggestionRepository = timePlaceSuggestionRepository;
         this.entityToDto = entityToDto;
         this.dtoToEntity = dtoToEntity;
-        this.userInTimePlaceSuggestionService = userInTimePlaceSuggestionService;
         this.participantService = participantService;
         this.eventService = eventService;
     }
@@ -51,7 +50,7 @@ public class TimePlaceSuggestionService {
     public TimePlaceSuggestionDto createTimePlaceSuggestion(String eventId, TimePlaceSuggestionDto timePlaceSuggestion) {
         TimePlaceSuggestionEntity entity = dtoToEntity.getTimePlaceSuggestionEntity(timePlaceSuggestion, eventId);
         TimePlaceSuggestionEntity writtenEntity = timePlaceSuggestionRepository.save(entity);
-        return entityToDto.getTimePlaceSuggestionDto(entity);
+        return entityToDto.getTimePlaceSuggestionDto(writtenEntity);
     }
 
     public TimePlaceSuggestionDto getTimePlaceSuggestionDto(String timePlaceId) {

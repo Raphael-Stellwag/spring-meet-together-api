@@ -45,12 +45,12 @@ public class JwtTokenUtil implements Serializable {
         return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
     }
 
-    private Boolean isTokenExpired(String token) {
+    private boolean isTokenExpired(String token) {
         final Date expiration = getExpirationDateFromToken(token);
         return expiration.before(new Date());
     }
 
-    private Boolean ignoreTokenExpiration(String token) {
+    private boolean ignoreTokenExpiration() {
         // here you specify tokens, for that the expiration is ignored
         return false;
     }
@@ -63,19 +63,19 @@ public class JwtTokenUtil implements Serializable {
     private String doGenerateToken(Map<String, Object> claims, String subject) {
 
         return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + jwtTokenValidity*1000)).signWith(SignatureAlgorithm.HS512, secret).compact();
+                .setExpiration(new Date(System.currentTimeMillis() + jwtTokenValidity * 1000)).signWith(SignatureAlgorithm.HS512, secret).compact();
     }
 
-    public Boolean canTokenBeRefreshed(String token) {
-        return (!isTokenExpired(token) || ignoreTokenExpiration(token));
+    public boolean canTokenBeRefreshed(String token) {
+        return (!isTokenExpired(token) || ignoreTokenExpiration());
     }
 
-    public Boolean validateToken(String token, String providedUsername) {
+    public boolean validateToken(String token, String providedUsername) {
         final String username = getUsernameFromToken(token);
         return (username.equals(providedUsername) && !isTokenExpired(token));
     }
 
-    public Boolean headerBelongsToUser(String authorizationHeader, String userName) {
+    public boolean headerBelongsToUser(String authorizationHeader, String userName) {
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             String token = authorizationHeader.substring(7);
             return validateToken(token, userName);

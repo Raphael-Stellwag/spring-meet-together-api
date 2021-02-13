@@ -29,15 +29,16 @@ public class MyUserDetailsService implements UserDetailsService {
 
     /**
      * Loads the UserDetails from the database for the given User
+     *
      * @param username normally from jwt or basic Auth
      * @return UserDetails with Data from database
      * @throws UsernameNotFoundException User does not exist in the database
      */
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String username) {
         log.info("Got called");
 
-        Optional<UserEntity> optionalUserEntity =  userRepository.findById(username);
+        Optional<UserEntity> optionalUserEntity = userRepository.findById(username);
 
         if (optionalUserEntity.isEmpty()) {
             throw new UsernameNotFoundException("User not found in database");
