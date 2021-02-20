@@ -43,7 +43,6 @@ public class MessageApiImpl implements MessageApi {
         return ResponseEntity.ok(messageDto);
     }
 
-    //TODO implementation needed
     @Override
     public ResponseEntity<MessagesDto> getMessages(String authorization, String eventId,
                                                    @Valid String count, @Valid String lastMessage, @Valid String direction) {

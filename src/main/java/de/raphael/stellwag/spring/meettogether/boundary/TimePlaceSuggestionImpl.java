@@ -4,10 +4,8 @@ import de.raphael.stellwag.generated.api.TimePlaceSuggestionApi;
 import de.raphael.stellwag.generated.dto.EventDto;
 import de.raphael.stellwag.generated.dto.TimePlaceSuggestionDto;
 import de.raphael.stellwag.generated.dto.TimePlaceSuggestionsDto;
-import de.raphael.stellwag.spring.meettogether.control.EventService;
-import de.raphael.stellwag.spring.meettogether.control.TimePlaceSuggestionService;
-import de.raphael.stellwag.spring.meettogether.control.UserInEventService;
-import de.raphael.stellwag.spring.meettogether.control.UserInTimePlaceSuggestionService;
+import de.raphael.stellwag.spring.meettogether.control.*;
+import de.raphael.stellwag.spring.meettogether.entity.model.MessageTypeEnum;
 import de.raphael.stellwag.spring.meettogether.error.MeetTogetherException;
 import de.raphael.stellwag.spring.meettogether.error.MeetTogetherExceptionEnum;
 import de.raphael.stellwag.spring.meettogether.security.helpers.JwtTokenUtil;
@@ -25,14 +23,16 @@ public class TimePlaceSuggestionImpl implements TimePlaceSuggestionApi {
     private final UserInEventService userInEventService;
     private final TimePlaceSuggestionService timePlaceSuggestionService;
     private final UserInTimePlaceSuggestionService userInTimePlaceSuggestionService;
+    private final MessageService messageService;
 
     @Autowired
-    public TimePlaceSuggestionImpl(JwtTokenUtil jwtTokenUtil, EventService eventService, UserInEventService userInEventService, TimePlaceSuggestionService timePlaceSuggestionService, UserInTimePlaceSuggestionService userInTimePlaceSuggestionService) {
+    public TimePlaceSuggestionImpl(JwtTokenUtil jwtTokenUtil, EventService eventService, UserInEventService userInEventService, TimePlaceSuggestionService timePlaceSuggestionService, UserInTimePlaceSuggestionService userInTimePlaceSuggestionService, MessageService messageService) {
         this.jwtTokenUtil = jwtTokenUtil;
         this.eventService = eventService;
         this.userInEventService = userInEventService;
         this.timePlaceSuggestionService = timePlaceSuggestionService;
         this.userInTimePlaceSuggestionService = userInTimePlaceSuggestionService;
+        this.messageService = messageService;
     }
 
     @Override
@@ -59,6 +59,9 @@ public class TimePlaceSuggestionImpl implements TimePlaceSuggestionApi {
         }
 
         TimePlaceSuggestionDto timePlaceSuggestionDto = timePlaceSuggestionService.createTimePlaceSuggestion(eventId, timePlaceSuggestion);
+
+        messageService.sendGeneratedMessage(MessageTypeEnum.TIME_PLACE_SUGGESTION_ADDED, eventId, userId);
+
         return ResponseEntity.ok(timePlaceSuggestionDto);
     }
 
@@ -104,6 +107,10 @@ public class TimePlaceSuggestionImpl implements TimePlaceSuggestionApi {
         }
 
         EventDto eventDto = timePlaceSuggestionService.timePlaceIdWasChoosen(timePlaceId, eventId);
+
+        eventService.sendEventUpdateToWebsocketClients(eventDto);
+        messageService.sendGeneratedMessage(MessageTypeEnum.TIME_PLACE_SUGGESTION_CHOOSEN, eventId, userId);
+
         return ResponseEntity.ok(eventDto);
     }
 }

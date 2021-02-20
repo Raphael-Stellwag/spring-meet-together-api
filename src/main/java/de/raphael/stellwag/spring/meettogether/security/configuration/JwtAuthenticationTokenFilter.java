@@ -22,11 +22,14 @@ import java.io.IOException;
 @Component
 public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
-    @Autowired
-    private MyUserDetailsService jwtUserDetailsService;
+    private final MyUserDetailsService jwtUserDetailsService;
+    private final JwtTokenUtil jwtTokenUtil;
 
     @Autowired
-    private JwtTokenUtil jwtTokenUtil;
+    public JwtAuthenticationTokenFilter(MyUserDetailsService jwtUserDetailsService, JwtTokenUtil jwtTokenUtil) {
+        this.jwtUserDetailsService = jwtUserDetailsService;
+        this.jwtTokenUtil = jwtTokenUtil;
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
@@ -46,14 +49,6 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
         authenticateJwtToken(request, requestTokenHeader);
         authenticateBasicAuth(request, requestTokenHeader);
-
-/*
-        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
-                "TEST", null, null);
-        usernamePasswordAuthenticationToken
-                .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-        SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-*/
 
         chain.doFilter(request, response);
     }

@@ -1,6 +1,5 @@
 package de.raphael.stellwag.spring.meettogether.configuration;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -12,11 +11,8 @@ import java.util.Properties;
 @Configuration
 public class MailConfiguration {
 
-    @Autowired
-    private Environment env;
-
     @Bean
-    public JavaMailSender getMailSender() {
+    public JavaMailSender getMailSender(Environment env) {
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
 
         mailSender.setHost(env.getProperty("spring.mail.host"));

@@ -945,8 +945,14 @@ definitions:
         type: "boolean"
         default: false
       generated_content_description:
-        type: "integer"
-        format: "int32"
+        type: "string"
+        enum:
+          - EVENT_CREATED
+          - EVENT_UPDATED
+          - USER_JOINED_EVENT
+          - USER_LEFT_EVENT
+          - TIME_PLACE_SUGGESTION_ADDED
+          - TIME_PLACE_SUGGESTION_CHOOSEN
   Messages:
     type: "array"
     items:

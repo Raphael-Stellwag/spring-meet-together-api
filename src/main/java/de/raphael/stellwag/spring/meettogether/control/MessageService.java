@@ -4,6 +4,7 @@ import de.raphael.stellwag.generated.dto.MessageDto;
 import de.raphael.stellwag.generated.dto.MessagesDto;
 import de.raphael.stellwag.spring.meettogether.entity.dao.MessageRepository;
 import de.raphael.stellwag.spring.meettogether.entity.model.MessageEntity;
+import de.raphael.stellwag.spring.meettogether.entity.model.MessageTypeEnum;
 import de.raphael.stellwag.spring.meettogether.helpers.DtoToEntity;
 import de.raphael.stellwag.spring.meettogether.helpers.EntityToDto;
 import de.raphael.stellwag.spring.meettogether.websocket.WebsocketEndpoint;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -63,14 +65,28 @@ public class MessageService {
         return messageDtos;
     }
 
+    public void sendGeneratedMessage(MessageTypeEnum messageType, String eventId, String userId) {
+        String userName = userService.getUserName(userId);
+
+        MessageEntity messageEntity = new MessageEntity();
+        messageEntity.setUserName(userName);
+        messageEntity.setMessageType(messageType);
+        messageEntity.setEventId(eventId);
+        messageEntity.setDate(LocalDateTime.now());
+        messageEntity.setUserId(userId);
+        // TODO: messageEntity.setContent();
+
+        messageEntity = messageRepository.insert(messageEntity);
+
+        MessageDto messageDto = entityToDto.getMessageDto(messageEntity);
+        sendWebsocketMessagesInNewThread(messageDto, eventId);
+    }
+
     private void sendWebsocketMessagesInNewThread(MessageDto messageDto, String eventId) {
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                List<String> userIdsFromEvent = userInEventService.getUserIdsFromEvent(eventId);
-                for (String userId : userIdsFromEvent) {
-                    websocketEndpoint.sendNewMessageToClient(messageDto, userId);
-                }
+        Runnable runnable = () -> {
+            List<String> userIdsFromEvent = userInEventService.getUserIdsFromEvent(eventId);
+            for (String userId : userIdsFromEvent) {
+                websocketEndpoint.sendNewMessageToClient(messageDto, userId);
             }
         };
 

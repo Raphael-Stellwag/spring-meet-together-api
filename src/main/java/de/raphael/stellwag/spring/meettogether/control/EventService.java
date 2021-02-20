@@ -96,7 +96,6 @@ public class EventService {
         EventEntity writtenEntity = eventRepository.save(eventEntity);
         EventDto eventDto = entityToDto.getEventDto(writtenEntity, userId);
 
-        sendWebsocketMessagesInNewThread(eventDto);
         return eventDto;
     }
 
@@ -104,17 +103,16 @@ public class EventService {
         EventEntity eventEntity = getEventEntity(eventId);
         eventEntity.setChosenTimePlaceSuggestionEntity(timePlaceSuggestionEntity);
         EventEntity writtenEntity = eventRepository.save(eventEntity);
-        return entityToDto.getEventDto(writtenEntity, eventEntity.getCreatorId());
+        EventDto eventDto = entityToDto.getEventDto(writtenEntity, eventEntity.getCreatorId());
+
+        return eventDto;
     }
 
-    private void sendWebsocketMessagesInNewThread(EventDto eventDto) {
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                List<String> userIdsFromEvent = userInEventService.getUserIdsFromEvent(eventDto.getId());
-                for (String userId : userIdsFromEvent) {
-                    websocketEndpoint.sendEventUpdateToClient(eventDto, userId);
-                }
+    public void sendEventUpdateToWebsocketClients(EventDto eventDto) {
+        Runnable runnable = () -> {
+            List<String> userIdsFromEvent = userInEventService.getUserIdsFromEvent(eventDto.getId());
+            for (String userId : userIdsFromEvent) {
+                websocketEndpoint.sendEventUpdateToClient(eventDto, userId);
             }
         };
 

@@ -37,9 +37,7 @@ public class WebsocketEndpoint {
 
         Map<String, Object> userProperties = config.getUserProperties();
 
-        userProperties.forEach((s, o) -> {
-            log.info("{} has value {}", s, o);
-        });
+        userProperties.forEach((s, o) -> log.info("{} has value {}", s, o));
 
     }
 

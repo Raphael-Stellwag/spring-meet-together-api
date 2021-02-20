@@ -6,8 +6,10 @@ import de.raphael.stellwag.generated.dto.EventDto;
 import de.raphael.stellwag.generated.dto.EventsDto;
 import de.raphael.stellwag.generated.dto.ParticipantsDto;
 import de.raphael.stellwag.spring.meettogether.control.EventService;
+import de.raphael.stellwag.spring.meettogether.control.MessageService;
 import de.raphael.stellwag.spring.meettogether.control.ParticipantService;
 import de.raphael.stellwag.spring.meettogether.control.UserInEventService;
+import de.raphael.stellwag.spring.meettogether.entity.model.MessageTypeEnum;
 import de.raphael.stellwag.spring.meettogether.error.MeetTogetherException;
 import de.raphael.stellwag.spring.meettogether.error.MeetTogetherExceptionEnum;
 import de.raphael.stellwag.spring.meettogether.security.helpers.JwtTokenUtil;
@@ -29,13 +31,15 @@ public class EventApiImpl implements EventApi {
     private final UserInEventService userInEventService;
     private final JwtTokenUtil jwtTokenUtil;
     private final ParticipantService participantService;
+    private final MessageService messageService;
 
     @Autowired
-    EventApiImpl(EventService eventService, UserInEventService userInEventService, JwtTokenUtil jwtTokenUtil, ParticipantService participantService) {
+    EventApiImpl(EventService eventService, UserInEventService userInEventService, JwtTokenUtil jwtTokenUtil, ParticipantService participantService, MessageService messageService) {
         this.eventService = eventService;
         this.userInEventService = userInEventService;
         this.jwtTokenUtil = jwtTokenUtil;
         this.participantService = participantService;
+        this.messageService = messageService;
     }
 
     @Override
@@ -45,6 +49,9 @@ public class EventApiImpl implements EventApi {
             throw new MeetTogetherException(MeetTogetherExceptionEnum.NOT_ALLOWED);
         }
         EventDto newEvent = eventService.createNewEvent(userId, body);
+
+        messageService.sendGeneratedMessage(MessageTypeEnum.EVENT_CREATED, newEvent.getId(), userId);
+
         return ResponseEntity.created(URI.create("/api/v1/events/" + newEvent.getId())).body(newEvent);
     }
 
@@ -56,6 +63,9 @@ public class EventApiImpl implements EventApi {
         }
         userInEventService.addUserToEvent(userId, eventId);
         EventDto eventDto = eventService.getEvent(eventId, userId);
+
+        messageService.sendGeneratedMessage(MessageTypeEnum.USER_JOINED_EVENT, eventId, userId);
+
         return ResponseEntity.ok(eventDto);
     }
 
@@ -72,6 +82,9 @@ public class EventApiImpl implements EventApi {
             throw new MeetTogetherException(MeetTogetherExceptionEnum.NOT_ALLOWED);
         }
         userInEventService.deleteUserFromEvent(userId, eventId);
+
+        messageService.sendGeneratedMessage(MessageTypeEnum.USER_LEFT_EVENT, eventId, userId);
+
         return ResponseEntity.ok().build();
     }
 
@@ -102,6 +115,10 @@ public class EventApiImpl implements EventApi {
             throw new MeetTogetherException(MeetTogetherExceptionEnum.NOT_ALLOWED);
         }
         EventDto eventDto = eventService.updateEvent(eventData, userId);
+        eventService.sendEventUpdateToWebsocketClients(eventDto);
+
+        messageService.sendGeneratedMessage(MessageTypeEnum.EVENT_UPDATED, eventId, userId);
+
         return ResponseEntity.ok(eventDto);
     }
 }

@@ -64,7 +64,6 @@ public class EntityToDto {
         MessageDto messageDto = new MessageDto();
 
         messageDto.setId(entity.getId());
-        messageDto.setContent(entity.getContent());
         messageDto.setUserId(entity.getUserId());
         messageDto.setTime(entity.getDate());
         messageDto.setUserName(entity.getUserName());
@@ -72,9 +71,11 @@ public class EntityToDto {
 
         if (entity.getMessageType() == MessageTypeEnum.CUSTOM) {
             messageDto.setGenerated(false);
+            messageDto.setContent(entity.getContent());
         } else {
-            //TODO:
-
+            messageDto.setGenerated(true);
+            messageDto.setGeneratedContentDescription(
+                    MessageDto.GeneratedContentDescriptionEnum.valueOf(entity.getMessageType().name()));
         }
 
         return messageDto;
