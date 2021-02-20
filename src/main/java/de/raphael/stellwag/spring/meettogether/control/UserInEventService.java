@@ -1,7 +1,7 @@
 package de.raphael.stellwag.spring.meettogether.control;
 
-import de.raphael.stellwag.spring.meettogether.entity.UserInEventEntity;
-import de.raphael.stellwag.spring.meettogether.entity.UserInEventRepository;
+import de.raphael.stellwag.spring.meettogether.entity.dao.UserInEventRepository;
+import de.raphael.stellwag.spring.meettogether.entity.model.UserInEventEntity;
 import de.raphael.stellwag.spring.meettogether.error.MeetTogetherException;
 import de.raphael.stellwag.spring.meettogether.error.MeetTogetherExceptionEnum;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +34,9 @@ public class UserInEventService {
     }
 
     public void addUserToEvent(String userId, String eventId) {
-        UserInEventEntity userInEventEntity = new UserInEventEntity(null, userId, eventId);
+        UserInEventEntity userInEventEntity = new UserInEventEntity();
+        userInEventEntity.setEventId(eventId);
+        userInEventEntity.setUserId(userId);
         userInEventRepository.insert(userInEventEntity);
     }
 
@@ -58,5 +60,16 @@ public class UserInEventService {
             ids.add(userInEventEntity.getUserId());
         }
         return ids;
+    }
+
+    public void setLastReadMessage(String userId, String eventId, String messageId) {
+        List<UserInEventEntity> userInEventEntities = userInEventRepository.findByUserIdAndEventId(userId, eventId);
+        if (userInEventEntities.size() > 1) {
+            log.warn("User is more than one time in an event !!!!!!");
+        }
+        for (UserInEventEntity userInEventEntity : userInEventEntities) {
+            userInEventEntity.setLastReadMessageId(messageId);
+            userInEventRepository.save(userInEventEntity);
+        }
     }
 }

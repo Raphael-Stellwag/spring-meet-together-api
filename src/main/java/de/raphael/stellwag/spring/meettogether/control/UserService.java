@@ -1,8 +1,8 @@
 package de.raphael.stellwag.spring.meettogether.control;
 
 import de.raphael.stellwag.generated.dto.UserDto;
-import de.raphael.stellwag.spring.meettogether.entity.UserEntity;
-import de.raphael.stellwag.spring.meettogether.entity.UserRepository;
+import de.raphael.stellwag.spring.meettogether.entity.dao.UserRepository;
+import de.raphael.stellwag.spring.meettogether.entity.model.UserEntity;
 import de.raphael.stellwag.spring.meettogether.error.MeetTogetherException;
 import de.raphael.stellwag.spring.meettogether.error.MeetTogetherExceptionEnum;
 import de.raphael.stellwag.spring.meettogether.helpers.EntityToDto;
@@ -91,5 +91,13 @@ public class UserService {
             throw new MeetTogetherException(MeetTogetherExceptionEnum.USER_NOT_FOUND);
         }
         return entityToDto.getUserDto(optionalUserEntity.get());
+    }
+
+    public String getUserName(String userId) {
+        Optional<UserEntity> userEntity = userRepository.findById(userId);
+        if (userEntity.isEmpty()) {
+            throw new MeetTogetherException(MeetTogetherExceptionEnum.USER_NOT_FOUND);
+        }
+        return userEntity.get().getName();
     }
 }

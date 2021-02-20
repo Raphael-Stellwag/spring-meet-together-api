@@ -1,7 +1,7 @@
 package de.raphael.stellwag.spring.meettogether.control;
 
-import de.raphael.stellwag.spring.meettogether.entity.UserInTimePlaceSuggestionEntity;
-import de.raphael.stellwag.spring.meettogether.entity.UserInTimePlaceSuggestionRepository;
+import de.raphael.stellwag.spring.meettogether.entity.dao.UserInTimePlaceSuggestionRepository;
+import de.raphael.stellwag.spring.meettogether.entity.model.UserInTimePlaceSuggestionEntity;
 import de.raphael.stellwag.spring.meettogether.error.MeetTogetherException;
 import de.raphael.stellwag.spring.meettogether.error.MeetTogetherExceptionEnum;
 import lombok.extern.slf4j.Slf4j;

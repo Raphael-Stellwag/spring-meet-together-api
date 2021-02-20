@@ -2,8 +2,8 @@ package de.raphael.stellwag.spring.meettogether.control;
 
 import de.raphael.stellwag.generated.dto.ParticipantDto;
 import de.raphael.stellwag.generated.dto.ParticipantsDto;
-import de.raphael.stellwag.spring.meettogether.entity.EventEntity;
-import de.raphael.stellwag.spring.meettogether.entity.UserEntity;
+import de.raphael.stellwag.spring.meettogether.entity.model.EventEntity;
+import de.raphael.stellwag.spring.meettogether.entity.model.UserEntity;
 import de.raphael.stellwag.spring.meettogether.helpers.EntityToDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

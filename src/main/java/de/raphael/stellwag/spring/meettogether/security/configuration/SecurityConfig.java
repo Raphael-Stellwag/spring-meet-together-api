@@ -68,7 +68,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // Add a filter to validate the tokens with every request
         httpSecurity.authorizeRequests()
                 .antMatchers("/api/v1/user/", "/api/v1/user", "/api/v1/ping", "/api/v1/ping/",
-                        "/api/v1/user/login/", "/api/v1/user/login").permitAll()
+                        "/api/v1/user/login/", "/api/v1/user/login", "/ws", "/ws/").permitAll()
                 .anyRequest().authenticated();
         httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
     }

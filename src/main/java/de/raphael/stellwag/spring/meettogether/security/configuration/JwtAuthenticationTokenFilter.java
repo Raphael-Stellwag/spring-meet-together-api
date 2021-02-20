@@ -34,8 +34,26 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
         // JWT Token is in the form "Bearer token". Remove Bearer word and get
         // only the Token
+
+        log.info("Request is getting filtered {}: {}", request.getMethod(), request.getRequestURI());
+
+        /* log all headers
+        Enumeration<String> headers = request.getHeaderNames();
+        while (headers.hasMoreElements()) {
+            String header = headers.nextElement();
+            log.info("{} : {}",  header, request.getHeader(header));
+        }*/
+
         authenticateJwtToken(request, requestTokenHeader);
         authenticateBasicAuth(request, requestTokenHeader);
+
+/*
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
+                "TEST", null, null);
+        usernamePasswordAuthenticationToken
+                .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+*/
 
         chain.doFilter(request, response);
     }

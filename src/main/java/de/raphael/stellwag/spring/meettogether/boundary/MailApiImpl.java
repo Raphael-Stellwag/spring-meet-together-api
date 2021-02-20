@@ -28,7 +28,6 @@ public class MailApiImpl implements MailApi {
         this.userInEventService = userInEventService;
     }
 
-    //TODO implementation needed
     @Override
     public ResponseEntity<MessageDto> sendMail(String authorization, String eventId, @Valid MailDto mailBody) {
         String userId = jwtTokenUtil.getUsernameFromToken(jwtTokenUtil.getTokenFromHeader(authorization));

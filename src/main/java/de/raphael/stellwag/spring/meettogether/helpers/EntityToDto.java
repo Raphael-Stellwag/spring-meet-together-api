@@ -1,9 +1,7 @@
 package de.raphael.stellwag.spring.meettogether.helpers;
 
 import de.raphael.stellwag.generated.dto.*;
-import de.raphael.stellwag.spring.meettogether.entity.EventEntity;
-import de.raphael.stellwag.spring.meettogether.entity.TimePlaceSuggestionEntity;
-import de.raphael.stellwag.spring.meettogether.entity.UserEntity;
+import de.raphael.stellwag.spring.meettogether.entity.model.*;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -60,5 +58,25 @@ public class EntityToDto {
         timePlaceSuggestionDto.setEndDate(timePlaceSuggestionEntity.getEndDate());
 
         return timePlaceSuggestionDto;
+    }
+
+    public MessageDto getMessageDto(MessageEntity entity) {
+        MessageDto messageDto = new MessageDto();
+
+        messageDto.setId(entity.getId());
+        messageDto.setContent(entity.getContent());
+        messageDto.setUserId(entity.getUserId());
+        messageDto.setTime(entity.getDate());
+        messageDto.setUserName(entity.getUserName());
+        messageDto.setEventId(entity.getEventId());
+
+        if (entity.getMessageType() == MessageTypeEnum.CUSTOM) {
+            messageDto.setGenerated(false);
+        } else {
+            //TODO:
+
+        }
+
+        return messageDto;
     }
 }

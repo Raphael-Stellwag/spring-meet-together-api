@@ -2,14 +2,15 @@ package de.raphael.stellwag.spring.meettogether.control;
 
 import de.raphael.stellwag.generated.dto.EventDto;
 import de.raphael.stellwag.generated.dto.EventsDto;
-import de.raphael.stellwag.spring.meettogether.entity.EventEntity;
-import de.raphael.stellwag.spring.meettogether.entity.EventRepository;
-import de.raphael.stellwag.spring.meettogether.entity.TimePlaceSuggestionEntity;
-import de.raphael.stellwag.spring.meettogether.entity.UserInEventRepository;
+import de.raphael.stellwag.spring.meettogether.entity.dao.EventRepository;
+import de.raphael.stellwag.spring.meettogether.entity.dao.UserInEventRepository;
+import de.raphael.stellwag.spring.meettogether.entity.model.EventEntity;
+import de.raphael.stellwag.spring.meettogether.entity.model.TimePlaceSuggestionEntity;
 import de.raphael.stellwag.spring.meettogether.error.MeetTogetherException;
 import de.raphael.stellwag.spring.meettogether.error.MeetTogetherExceptionEnum;
 import de.raphael.stellwag.spring.meettogether.helpers.DtoToEntity;
 import de.raphael.stellwag.spring.meettogether.helpers.EntityToDto;
+import de.raphael.stellwag.spring.meettogether.websocket.WebsocketEndpoint;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,13 +27,15 @@ public class EventService {
     private final UserInEventService userInEventService;
     private final DtoToEntity dtoToEntity;
     private final EntityToDto entityToDto;
+    private final WebsocketEndpoint websocketEndpoint;
 
     @Autowired
-    EventService(EventRepository eventRepository, UserInEventRepository userInEventRepository, UserInEventService userInEventService, DtoToEntity dtoToEntity, EntityToDto entityToDto) {
+    EventService(EventRepository eventRepository, UserInEventRepository userInEventRepository, UserInEventService userInEventService, DtoToEntity dtoToEntity, EntityToDto entityToDto, WebsocketEndpoint websocketEndpoint) {
         this.eventRepository = eventRepository;
         this.userInEventService = userInEventService;
         this.dtoToEntity = dtoToEntity;
         this.entityToDto = entityToDto;
+        this.websocketEndpoint = websocketEndpoint;
     }
 
     public EventDto createNewEvent(String userId, EventDto eventData) {
@@ -91,7 +94,10 @@ public class EventService {
         optionalEventEntity.ifPresent(entity -> eventEntity.setChosenTimePlaceSuggestionEntity(entity.getChosenTimePlaceSuggestionEntity()));
 
         EventEntity writtenEntity = eventRepository.save(eventEntity);
-        return entityToDto.getEventDto(writtenEntity, userId);
+        EventDto eventDto = entityToDto.getEventDto(writtenEntity, userId);
+
+        sendWebsocketMessagesInNewThread(eventDto);
+        return eventDto;
     }
 
     public EventDto timePlaceWasChoosen(String eventId, TimePlaceSuggestionEntity timePlaceSuggestionEntity) {
@@ -99,5 +105,20 @@ public class EventService {
         eventEntity.setChosenTimePlaceSuggestionEntity(timePlaceSuggestionEntity);
         EventEntity writtenEntity = eventRepository.save(eventEntity);
         return entityToDto.getEventDto(writtenEntity, eventEntity.getCreatorId());
+    }
+
+    private void sendWebsocketMessagesInNewThread(EventDto eventDto) {
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                List<String> userIdsFromEvent = userInEventService.getUserIdsFromEvent(eventDto.getId());
+                for (String userId : userIdsFromEvent) {
+                    websocketEndpoint.sendEventUpdateToClient(eventDto, userId);
+                }
+            }
+        };
+
+        Thread newThread = new Thread(runnable);
+        newThread.start();
     }
 }

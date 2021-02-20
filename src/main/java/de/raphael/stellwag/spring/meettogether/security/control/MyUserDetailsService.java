@@ -1,7 +1,7 @@
 package de.raphael.stellwag.spring.meettogether.security.control;
 
-import de.raphael.stellwag.spring.meettogether.entity.UserEntity;
-import de.raphael.stellwag.spring.meettogether.entity.UserRepository;
+import de.raphael.stellwag.spring.meettogether.entity.dao.UserRepository;
+import de.raphael.stellwag.spring.meettogether.entity.model.UserEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
