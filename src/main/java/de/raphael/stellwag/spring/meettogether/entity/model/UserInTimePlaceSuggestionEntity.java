@@ -1,20 +1,21 @@
-package de.raphael.stellwag.spring.meettogether.entity;
+package de.raphael.stellwag.spring.meettogether.entity.model;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Getter
 @Setter
+@Getter
 @ToString
+@EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
-@Document("UserInEvent")
-public class UserInEventEntity {
+@Document("UserInTimePlaceSuggestion")
+public class UserInTimePlaceSuggestionEntity {
+
     @Id
     private String id;
 
+    private String timePlaceSuggestionId;
     private String userId;
-    private String eventId;
 }

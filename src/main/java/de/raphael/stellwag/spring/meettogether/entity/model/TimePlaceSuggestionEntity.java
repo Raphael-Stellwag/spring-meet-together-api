@@ -1,4 +1,4 @@
-package de.raphael.stellwag.spring.meettogether.entity;
+package de.raphael.stellwag.spring.meettogether.entity.model;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;

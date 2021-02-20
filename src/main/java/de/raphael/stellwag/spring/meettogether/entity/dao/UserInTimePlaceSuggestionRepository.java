@@ -1,5 +1,6 @@
-package de.raphael.stellwag.spring.meettogether.entity;
+package de.raphael.stellwag.spring.meettogether.entity.dao;
 
+import de.raphael.stellwag.spring.meettogether.entity.model.UserInTimePlaceSuggestionEntity;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;

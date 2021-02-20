@@ -1,4 +1,4 @@
-package de.raphael.stellwag.spring.meettogether.entity;
+package de.raphael.stellwag.spring.meettogether.entity.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

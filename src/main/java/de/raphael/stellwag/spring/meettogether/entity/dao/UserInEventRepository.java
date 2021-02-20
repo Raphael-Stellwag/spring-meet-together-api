@@ -1,5 +1,6 @@
-package de.raphael.stellwag.spring.meettogether.entity;
+package de.raphael.stellwag.spring.meettogether.entity.dao;
 
+import de.raphael.stellwag.spring.meettogether.entity.model.UserInEventEntity;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
