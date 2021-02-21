@@ -48,7 +48,7 @@ public class UserApiImpl implements UserApi {
         return ResponseEntity.ok(userDto);
     }
 
-    // TODO Test if name changes everywhere
+    // TODO Test if name changes everywhere --> should be now
     @Override
     public ResponseEntity<UserDto> registerUser(String userId, @Valid UserDto user) {
         if (!userId.equals(currentUser.getUserName())) {

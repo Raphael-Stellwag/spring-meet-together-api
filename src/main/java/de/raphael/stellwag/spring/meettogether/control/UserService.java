@@ -8,6 +8,7 @@ import de.raphael.stellwag.spring.meettogether.error.MeetTogetherExceptionEnum;
 import de.raphael.stellwag.spring.meettogether.helpers.EntityToDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +25,7 @@ public class UserService {
     private final MessageService messageService;
 
     @Autowired
-    public UserService(UserRepository userRepository, EntityToDto entityToDto, PasswordEncoder passwordEncoder, MessageService messageService) {
+    public UserService(UserRepository userRepository, EntityToDto entityToDto, PasswordEncoder passwordEncoder, @Lazy MessageService messageService) {
         this.userRepository = userRepository;
         this.entityToDto = entityToDto;
         this.passwordEncoder = passwordEncoder;
