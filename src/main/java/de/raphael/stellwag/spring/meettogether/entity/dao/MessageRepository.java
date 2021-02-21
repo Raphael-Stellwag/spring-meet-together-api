@@ -15,6 +15,8 @@ public interface MessageRepository extends MongoRepository<MessageEntity, String
 
     int countByEventIdAndDateGreaterThan(String id, LocalDateTime lastReadMessageDate);
 
-    @Query(value = "{ 'eventId': [0]", sort = "{ date : -1 }")
+    @Query(value = "{ 'eventId': [0] }", sort = "{ date : -1 }")
     List<MessageEntity> getNewestEntityForEventId(String id, Pageable pageable);
+
+    List<MessageEntity> findByUserId(String userId);
 }

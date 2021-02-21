@@ -21,12 +21,14 @@ public class UserService {
     private final UserRepository userRepository;
     private final EntityToDto entityToDto;
     private final PasswordEncoder passwordEncoder;
+    private final MessageService messageService;
 
     @Autowired
-    public UserService(UserRepository userRepository, EntityToDto entityToDto, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, EntityToDto entityToDto, PasswordEncoder passwordEncoder, MessageService messageService) {
         this.userRepository = userRepository;
         this.entityToDto = entityToDto;
         this.passwordEncoder = passwordEncoder;
+        this.messageService = messageService;
     }
 
     public UserDto createNotRegisteredUser(UserDto body) {
@@ -48,6 +50,9 @@ public class UserService {
         UserEntity userEntity = optionalUserEntity.get();
         userEntity.setName(name);
         userEntity = userRepository.save(userEntity);
+
+        messageService.renameUserNameInMessages(userId, name);
+
         return entityToDto.getUserDto(userEntity);
     }
 

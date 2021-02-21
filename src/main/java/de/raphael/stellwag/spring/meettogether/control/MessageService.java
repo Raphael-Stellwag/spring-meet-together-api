@@ -112,4 +112,11 @@ public class MessageService {
         return messageEntities.get(0).getDate();
     }
 
+    public void renameUserNameInMessages(String userId, String name) {
+        List<MessageEntity> messageEntities = messageRepository.findByUserId(userId);
+        messageEntities.forEach(messageEntity -> {
+            messageEntity.setUserName(name);
+            messageRepository.save(messageEntity);
+        });
+    }
 }
