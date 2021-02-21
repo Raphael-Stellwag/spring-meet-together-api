@@ -40,19 +40,10 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
         log.info("Request is getting filtered {}: {}", request.getMethod(), request.getRequestURI());
 
-        /* log all headers
-        Enumeration<String> headers = request.getHeaderNames();
-        while (headers.hasMoreElements()) {
-            String header = headers.nextElement();
-            log.info("{} : {}",  header, request.getHeader(header));
-        }*/
-
         authenticateJwtToken(request, requestTokenHeader);
         authenticateBasicAuth(request, requestTokenHeader);
 
         chain.doFilter(request, response);
-
-
     }
 
     private void authenticateBasicAuth(HttpServletRequest request, String requestTokenHeader) {

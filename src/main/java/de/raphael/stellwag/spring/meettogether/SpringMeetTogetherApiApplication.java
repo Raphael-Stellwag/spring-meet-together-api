@@ -20,10 +20,4 @@ public class SpringMeetTogetherApiApplication {
         return new BCryptPasswordEncoder();
     }
 
-    /*@Bean
-    public ObjectMapper objectMapper() {
-        ObjectMapper om = new ObjectMapper();
-        om.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
-        return om;
-    }*/
 }

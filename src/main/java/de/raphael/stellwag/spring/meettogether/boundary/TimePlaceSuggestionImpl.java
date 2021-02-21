@@ -1,7 +1,5 @@
 package de.raphael.stellwag.spring.meettogether.boundary;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import de.raphael.stellwag.generated.api.TimePlaceSuggestionApi;
 import de.raphael.stellwag.generated.dto.EventDto;
 import de.raphael.stellwag.generated.dto.TimePlaceSuggestionDto;
@@ -11,7 +9,6 @@ import de.raphael.stellwag.spring.meettogether.entity.model.MessageTypeEnum;
 import de.raphael.stellwag.spring.meettogether.error.MeetTogetherException;
 import de.raphael.stellwag.spring.meettogether.error.MeetTogetherExceptionEnum;
 import de.raphael.stellwag.spring.meettogether.helpers.CurrentUser;
-import de.raphael.stellwag.spring.meettogether.security.helpers.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -21,25 +18,21 @@ import javax.validation.Valid;
 @Controller
 public class TimePlaceSuggestionImpl implements TimePlaceSuggestionApi {
 
-    private final JwtTokenUtil jwtTokenUtil;
     private final EventService eventService;
     private final UserInEventService userInEventService;
     private final TimePlaceSuggestionService timePlaceSuggestionService;
     private final UserInTimePlaceSuggestionService userInTimePlaceSuggestionService;
     private final MessageService messageService;
     private final CurrentUser currentUser;
-    private final ObjectMapper om;
 
     @Autowired
-    public TimePlaceSuggestionImpl(JwtTokenUtil jwtTokenUtil, EventService eventService, UserInEventService userInEventService, TimePlaceSuggestionService timePlaceSuggestionService, UserInTimePlaceSuggestionService userInTimePlaceSuggestionService, MessageService messageService, CurrentUser currentUser, ObjectMapper om) {
-        this.jwtTokenUtil = jwtTokenUtil;
+    public TimePlaceSuggestionImpl(EventService eventService, UserInEventService userInEventService, TimePlaceSuggestionService timePlaceSuggestionService, UserInTimePlaceSuggestionService userInTimePlaceSuggestionService, MessageService messageService, CurrentUser currentUser) {
         this.eventService = eventService;
         this.userInEventService = userInEventService;
         this.timePlaceSuggestionService = timePlaceSuggestionService;
         this.userInTimePlaceSuggestionService = userInTimePlaceSuggestionService;
         this.messageService = messageService;
         this.currentUser = currentUser;
-        this.om = om;
     }
 
     @Override
@@ -67,11 +60,7 @@ public class TimePlaceSuggestionImpl implements TimePlaceSuggestionApi {
 
         TimePlaceSuggestionDto timePlaceSuggestionDto = timePlaceSuggestionService.createTimePlaceSuggestion(eventId, timePlaceSuggestion);
 
-        try {
-            messageService.sendGeneratedMessage(MessageTypeEnum.TIME_PLACE_SUGGESTION_ADDED, eventId, userId, om.writeValueAsString(timePlaceSuggestionDto));
-        } catch (JsonProcessingException e) {
-            log.warn("TimePlaceSuggestionDto could not be converted into a json String. => no generated message was added to the event ", e);
-        }
+        messageService.sendGeneratedMessage(MessageTypeEnum.TIME_PLACE_SUGGESTION_ADDED, eventId, userId, timePlaceSuggestionDto);
 
         return ResponseEntity.ok(timePlaceSuggestionDto);
     }
@@ -121,13 +110,9 @@ public class TimePlaceSuggestionImpl implements TimePlaceSuggestionApi {
 
         eventService.sendEventUpdateToWebsocketClients(eventDto);
 
-        try {
-            TimePlaceSuggestionDto timePlaceSuggestionDto = timePlaceSuggestionService.getTimePlaceSuggestionDto(timePlaceId);
-            messageService.sendGeneratedMessage(MessageTypeEnum.TIME_PLACE_SUGGESTION_CHOOSEN,
-                    eventId, userId, om.writeValueAsString(timePlaceSuggestionDto));
-        } catch (JsonProcessingException e) {
-            log.warn("TimePlaceSuggestionDto could not be converted into a json String. => no generated message was added to the event ", e);
-        }
+        TimePlaceSuggestionDto timePlaceSuggestionDto = timePlaceSuggestionService.getTimePlaceSuggestionDto(timePlaceId);
+        messageService.sendGeneratedMessage(MessageTypeEnum.TIME_PLACE_SUGGESTION_CHOOSEN,
+                eventId, userId, timePlaceSuggestionDto);
 
         return ResponseEntity.ok(eventDto);
     }

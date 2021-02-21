@@ -1,5 +1,7 @@
 package de.raphael.stellwag.spring.meettogether.control;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import de.raphael.stellwag.generated.dto.MessageDto;
 import de.raphael.stellwag.generated.dto.MessagesDto;
 import de.raphael.stellwag.spring.meettogether.entity.dao.MessageRepository;
@@ -27,14 +29,16 @@ public class MessageService {
     private final UserService userService;
     private final EntityToDto entityToDto;
     private final WebsocketEndpoint websocketEndpoint;
+    private final ObjectMapper om;
 
     @Autowired
-    public MessageService(MessageRepository messageRepository, DtoToEntity dtoToEntity, UserService userService, EntityToDto entityToDto, WebsocketEndpoint websocketEndpoint) {
+    public MessageService(MessageRepository messageRepository, DtoToEntity dtoToEntity, UserService userService, EntityToDto entityToDto, WebsocketEndpoint websocketEndpoint, ObjectMapper om) {
         this.messageRepository = messageRepository;
         this.dtoToEntity = dtoToEntity;
         this.userService = userService;
         this.entityToDto = entityToDto;
         this.websocketEndpoint = websocketEndpoint;
+        this.om = om;
     }
 
     public MessageDto userSendNewMessage(String userId, String eventId, MessageDto message) {
@@ -64,7 +68,7 @@ public class MessageService {
         return messageDtos;
     }
 
-    public void sendGeneratedMessage(MessageTypeEnum messageType, String eventId, String userId, String content) {
+    public void sendGeneratedMessage(MessageTypeEnum messageType, String eventId, String userId, Object content) {
         String userName = userService.getUserName(userId);
 
         MessageEntity messageEntity = new MessageEntity();
@@ -73,7 +77,11 @@ public class MessageService {
         messageEntity.setEventId(eventId);
         messageEntity.setDate(LocalDateTime.now());
         messageEntity.setUserId(userId);
-        messageEntity.setContent(content);
+        try {
+            messageEntity.setContent(om.writeValueAsString(content));
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
 
         messageEntity = messageRepository.insert(messageEntity);
 
@@ -91,9 +99,7 @@ public class MessageService {
     }
 
     private void sendWebsocketMessagesInNewThread(MessageDto messageDto, String eventId) {
-        Runnable runnable = () -> {
-            websocketEndpoint.sendNewMessageToClient(messageDto, eventId);
-        };
+        Runnable runnable = () -> websocketEndpoint.sendNewMessageToClient(messageDto, eventId);
 
         Thread newThread = new Thread(runnable);
         newThread.start();

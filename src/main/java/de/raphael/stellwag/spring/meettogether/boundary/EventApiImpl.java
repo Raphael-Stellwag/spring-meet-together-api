@@ -1,6 +1,5 @@
 package de.raphael.stellwag.spring.meettogether.boundary;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.raphael.stellwag.generated.api.EventApi;
 import de.raphael.stellwag.generated.dto.ApiResponseDto;
@@ -32,21 +31,17 @@ public class EventApiImpl implements EventApi {
 
     private final EventService eventService;
     private final UserInEventService userInEventService;
-    private final JwtTokenUtil jwtTokenUtil;
     private final ParticipantService participantService;
     private final MessageService messageService;
     private final CurrentUser currentUser;
-    private final ObjectMapper om;
 
     @Autowired
     EventApiImpl(EventService eventService, UserInEventService userInEventService, JwtTokenUtil jwtTokenUtil, ParticipantService participantService, MessageService messageService, CurrentUser currentUser, ObjectMapper om) {
         this.eventService = eventService;
         this.userInEventService = userInEventService;
-        this.jwtTokenUtil = jwtTokenUtil;
         this.participantService = participantService;
         this.messageService = messageService;
         this.currentUser = currentUser;
-        this.om = om;
     }
 
     @Override
@@ -57,11 +52,7 @@ public class EventApiImpl implements EventApi {
         }
         EventDto newEvent = eventService.createNewEvent(userId, body);
 
-        try {
-            messageService.sendGeneratedMessage(MessageTypeEnum.EVENT_CREATED, newEvent.getId(), userId, om.writeValueAsString(newEvent));
-        } catch (JsonProcessingException e) {
-            log.warn("EventDto could not be converted into a json String. => no generated message was added to the event ", e);
-        }
+        messageService.sendGeneratedMessage(MessageTypeEnum.EVENT_CREATED, newEvent.getId(), userId, newEvent);
 
         return ResponseEntity.created(URI.create("/api/v1/events/" + newEvent.getId())).body(newEvent);
     }
@@ -75,11 +66,7 @@ public class EventApiImpl implements EventApi {
         userInEventService.addUserToEvent(userId, eventId);
         EventDto eventDto = eventService.getEvent(eventId, userId);
 
-        try {
-            messageService.sendGeneratedMessage(MessageTypeEnum.USER_JOINED_EVENT, eventId, userId, om.writeValueAsString(eventDto));
-        } catch (JsonProcessingException e) {
-            log.warn("EventDto could not be converted into a json String. => no generated message was added to the event ", e);
-        }
+        messageService.sendGeneratedMessage(MessageTypeEnum.USER_JOINED_EVENT, eventId, userId, eventDto);
 
         return ResponseEntity.ok(eventDto);
     }
@@ -98,7 +85,8 @@ public class EventApiImpl implements EventApi {
         }
         userInEventService.deleteUserFromEvent(userId, eventId);
 
-        messageService.sendGeneratedMessage(MessageTypeEnum.USER_LEFT_EVENT, eventId, userId, "");
+        //TODO test this
+        messageService.sendGeneratedMessage(MessageTypeEnum.USER_LEFT_EVENT, eventId, userId, new Object());
 
         return ResponseEntity.ok().build();
     }
@@ -132,11 +120,7 @@ public class EventApiImpl implements EventApi {
         EventDto eventDto = eventService.updateEvent(eventData, userId);
         eventService.sendEventUpdateToWebsocketClients(eventDto);
 
-        try {
-            messageService.sendGeneratedMessage(MessageTypeEnum.EVENT_UPDATED, eventId, userId, om.writeValueAsString(eventDto));
-        } catch (JsonProcessingException e) {
-            log.warn("EventDto could not be converted into a json String. => no generated message was added to the event ", e);
-        }
+        messageService.sendGeneratedMessage(MessageTypeEnum.EVENT_UPDATED, eventId, userId, (eventDto));
 
         return ResponseEntity.ok(eventDto);
     }

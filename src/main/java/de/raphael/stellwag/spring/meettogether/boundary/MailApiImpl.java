@@ -19,14 +19,12 @@ import javax.validation.Valid;
 public class MailApiImpl implements MailApi {
 
     private final MailService mailService;
-    private final JwtTokenUtil jwtTokenUtil;
     private final UserInEventService userInEventService;
     private final CurrentUser currentUser;
 
     @Autowired
     public MailApiImpl(MailService mailService, JwtTokenUtil jwtTokenUtil, UserInEventService userInEventService, CurrentUser currentUser) {
         this.mailService = mailService;
-        this.jwtTokenUtil = jwtTokenUtil;
         this.userInEventService = userInEventService;
         this.currentUser = currentUser;
     }

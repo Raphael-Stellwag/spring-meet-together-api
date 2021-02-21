@@ -19,14 +19,12 @@ import javax.validation.Valid;
 @Controller
 public class MessageApiImpl implements MessageApi {
 
-    private final JwtTokenUtil jwtTokenUtil;
     private final UserInEventService userInEventService;
     private final MessageService messageService;
     private final CurrentUser currentUser;
 
     @Autowired
     public MessageApiImpl(JwtTokenUtil jwtTokenUtil, EventService eventService, UserInEventService userInEventService, MessageService messageService, CurrentUser currentUser) {
-        this.jwtTokenUtil = jwtTokenUtil;
         this.userInEventService = userInEventService;
         this.messageService = messageService;
         this.currentUser = currentUser;

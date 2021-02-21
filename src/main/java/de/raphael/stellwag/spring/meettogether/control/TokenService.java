@@ -13,14 +13,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class TokenService {
 
-    private final MyUserDetailsService userDetailsService;
     private final JwtTokenUtil jwtTokenUtil;
     private final CurrentUser currentUser;
 
 
     @Autowired
     public TokenService(MyUserDetailsService userDetailsService, JwtTokenUtil jwtTokenUtil, CurrentUser currentUser) {
-        this.userDetailsService = userDetailsService;
         this.jwtTokenUtil = jwtTokenUtil;
         this.currentUser = currentUser;
     }

@@ -18,13 +18,11 @@ import java.net.URI;
 public class UserApiImpl implements UserApi {
 
     private final UserService userService;
-    private final JwtTokenUtil jwtTokenUtil;
     private final CurrentUser currentUser;
 
     @Autowired
     public UserApiImpl(UserService userService, JwtTokenUtil jwtTokenUtil, CurrentUser currentUser) {
         this.userService = userService;
-        this.jwtTokenUtil = jwtTokenUtil;
         this.currentUser = currentUser;
     }
 
