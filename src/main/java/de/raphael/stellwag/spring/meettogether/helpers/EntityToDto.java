@@ -4,15 +4,19 @@ import de.raphael.stellwag.generated.dto.*;
 import de.raphael.stellwag.spring.meettogether.entity.model.*;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+
 @Component
 public class EntityToDto {
 
-    public EventDto getEventDto(EventEntity writtenEntity, String userId) {
+    public EventDto getEventDto(EventEntity writtenEntity, String userId, Integer unreadMessagesCount, LocalDateTime lastMessageTime) {
         EventDto eventDto = new EventDto();
         eventDto.setAccesstoken(writtenEntity.getAccesstoken());
         eventDto.setDescription(writtenEntity.getDescription());
         eventDto.setId(writtenEntity.getId());
         eventDto.setName(writtenEntity.getName());
+        eventDto.setLastMessageTime(lastMessageTime);
+        eventDto.setCountUnreadMessages(unreadMessagesCount);
 
         if (writtenEntity.getChosenTimePlaceSuggestionEntity() != null) {
             eventDto.setStartDate(writtenEntity.getChosenTimePlaceSuggestionEntity().getStartDate());
@@ -68,10 +72,10 @@ public class EntityToDto {
         messageDto.setTime(entity.getDate());
         messageDto.setUserName(entity.getUserName());
         messageDto.setEventId(entity.getEventId());
+        messageDto.setContent(entity.getContent());
 
         if (entity.getMessageType() == MessageTypeEnum.CUSTOM) {
             messageDto.setGenerated(false);
-            messageDto.setContent(entity.getContent());
         } else {
             messageDto.setGenerated(true);
             messageDto.setGeneratedContentDescription(

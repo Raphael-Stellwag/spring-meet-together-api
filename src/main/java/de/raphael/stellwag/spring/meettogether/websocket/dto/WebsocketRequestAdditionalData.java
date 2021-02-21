@@ -8,8 +8,8 @@ import lombok.*;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class WebsocketRequest {
-    private WebsocketRequestMethod method;
-    private String token;
-    private WebsocketRequestAdditionalData additionalData;
+public class WebsocketRequestAdditionalData {
+    private String eventId;
+    private String userId;
+    private String messageId;
 }

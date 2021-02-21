@@ -6,6 +6,7 @@ import de.raphael.stellwag.spring.meettogether.entity.dao.EventRepository;
 import de.raphael.stellwag.spring.meettogether.entity.dao.UserInEventRepository;
 import de.raphael.stellwag.spring.meettogether.entity.model.EventEntity;
 import de.raphael.stellwag.spring.meettogether.entity.model.TimePlaceSuggestionEntity;
+import de.raphael.stellwag.spring.meettogether.entity.model.UserInEventEntity;
 import de.raphael.stellwag.spring.meettogether.error.MeetTogetherException;
 import de.raphael.stellwag.spring.meettogether.error.MeetTogetherExceptionEnum;
 import de.raphael.stellwag.spring.meettogether.helpers.DtoToEntity;
@@ -15,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,14 +30,16 @@ public class EventService {
     private final DtoToEntity dtoToEntity;
     private final EntityToDto entityToDto;
     private final WebsocketEndpoint websocketEndpoint;
+    private final MessageService messageService;
 
     @Autowired
-    EventService(EventRepository eventRepository, UserInEventRepository userInEventRepository, UserInEventService userInEventService, DtoToEntity dtoToEntity, EntityToDto entityToDto, WebsocketEndpoint websocketEndpoint) {
+    EventService(EventRepository eventRepository, UserInEventRepository userInEventRepository, UserInEventService userInEventService, DtoToEntity dtoToEntity, EntityToDto entityToDto, WebsocketEndpoint websocketEndpoint, MessageService messageService) {
         this.eventRepository = eventRepository;
         this.userInEventService = userInEventService;
         this.dtoToEntity = dtoToEntity;
         this.entityToDto = entityToDto;
         this.websocketEndpoint = websocketEndpoint;
+        this.messageService = messageService;
     }
 
     public EventDto createNewEvent(String userId, EventDto eventData) {
@@ -46,18 +50,30 @@ public class EventService {
 
         userInEventService.addUserToEvent(userId, writtenEntity.getId());
 
-        return entityToDto.getEventDto(writtenEntity, userId);
+        return getEvent(writtenEntity.getId(), userId);
     }
 
     public EventsDto getEvents(String userId) {
         List<String> ids = userInEventService.getEventIdsFromUser(userId);
+        List<UserInEventEntity> userInEventEntities = userInEventService.getEntitiesFromUser(userId);
 
         Iterable<EventEntity> eventEntities = eventRepository.findAllById(ids);
 
         EventsDto eventDtos = new EventsDto();
         for (EventEntity eventEntity :
                 eventEntities) {
-            eventDtos.add(entityToDto.getEventDto(eventEntity, userId));
+            LocalDateTime lastReadMessageDate = null;
+            for (UserInEventEntity userInEventEntity :
+                    userInEventEntities) {
+                if (userInEventEntity.getEventId().equals(eventEntity.getId())) {
+                    lastReadMessageDate = userInEventEntity.getLastReadMessageTime();
+                    break;
+                }
+            }
+
+            Integer lastReadMessageCount = messageService.getCountFromDate(eventEntity.getId(), lastReadMessageDate);
+            LocalDateTime newestEntityDate = messageService.getNewestEntityDateForEvent(eventEntity.getId());
+            eventDtos.add(entityToDto.getEventDto(eventEntity, userId, lastReadMessageCount, newestEntityDate));
         }
 
         return eventDtos;
@@ -77,7 +93,12 @@ public class EventService {
     }
 
     public EventDto getEvent(String eventId, String userId) {
-        return entityToDto.getEventDto(getEventEntity(eventId), userId);
+        LocalDateTime lastReadMessageDate = userInEventService.getLastReadMessageDate(eventId, userId);
+
+        Integer lastReadMessageCount = messageService.getCountFromDate(eventId, lastReadMessageDate);
+        LocalDateTime newestEntityDate = messageService.getNewestEntityDateForEvent(eventId);
+
+        return entityToDto.getEventDto(getEventEntity(eventId), userId, lastReadMessageCount, newestEntityDate);
     }
 
     public boolean hasUserCreatedEvent(String userId, String eventId) {
@@ -94,18 +115,16 @@ public class EventService {
         optionalEventEntity.ifPresent(entity -> eventEntity.setChosenTimePlaceSuggestionEntity(entity.getChosenTimePlaceSuggestionEntity()));
 
         EventEntity writtenEntity = eventRepository.save(eventEntity);
-        EventDto eventDto = entityToDto.getEventDto(writtenEntity, userId);
 
-        return eventDto;
+        return getEvent(writtenEntity.getId(), userId);
     }
 
     public EventDto timePlaceWasChoosen(String eventId, TimePlaceSuggestionEntity timePlaceSuggestionEntity) {
         EventEntity eventEntity = getEventEntity(eventId);
         eventEntity.setChosenTimePlaceSuggestionEntity(timePlaceSuggestionEntity);
         EventEntity writtenEntity = eventRepository.save(eventEntity);
-        EventDto eventDto = entityToDto.getEventDto(writtenEntity, eventEntity.getCreatorId());
 
-        return eventDto;
+        return getEvent(writtenEntity.getId(), eventEntity.getCreatorId());
     }
 
     public void sendEventUpdateToWebsocketClients(EventDto eventDto) {

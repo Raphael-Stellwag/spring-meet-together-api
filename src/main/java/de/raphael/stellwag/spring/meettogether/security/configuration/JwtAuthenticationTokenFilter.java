@@ -51,6 +51,8 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         authenticateBasicAuth(request, requestTokenHeader);
 
         chain.doFilter(request, response);
+
+
     }
 
     private void authenticateBasicAuth(HttpServletRequest request, String requestTokenHeader) {
@@ -59,7 +61,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             if (hasValidBasicAuth) {
                 UserDetails userDetails = jwtUserDetailsService.getUserDetailsFromToken(requestTokenHeader);
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
-                        userDetails.getUsername(), null, userDetails.getAuthorities());
+                        userDetails, null, userDetails.getAuthorities());
                 usernamePasswordAuthenticationToken
                         .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 // After setting the Authentication in the context, we specify

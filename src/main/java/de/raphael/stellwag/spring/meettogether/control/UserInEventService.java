@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,10 +17,12 @@ import java.util.List;
 public class UserInEventService {
 
     private final UserInEventRepository userInEventRepository;
+    private final MessageService messageService;
 
     @Autowired
-    public UserInEventService(UserInEventRepository userInEventRepository) {
+    public UserInEventService(UserInEventRepository userInEventRepository, MessageService messageService) {
         this.userInEventRepository = userInEventRepository;
+        this.messageService = messageService;
     }
 
 
@@ -67,9 +70,27 @@ public class UserInEventService {
         if (userInEventEntities.size() > 1) {
             log.warn("User is more than one time in an event !!!!!!");
         }
+        LocalDateTime lastReadMessageDate = messageService.getMessageCreationDate(messageId);
         for (UserInEventEntity userInEventEntity : userInEventEntities) {
             userInEventEntity.setLastReadMessageId(messageId);
+            userInEventEntity.setLastReadMessageTime(lastReadMessageDate);
             userInEventRepository.save(userInEventEntity);
         }
+    }
+
+    public List<UserInEventEntity> getEntitiesFromUser(String userId) {
+        return userInEventRepository.findByUserId(userId);
+    }
+
+    public LocalDateTime getLastReadMessageDate(String eventId, String userId) {
+        List<UserInEventEntity> userInEventEntities = userInEventRepository.findByUserIdAndEventId(userId, eventId);
+        if (userInEventEntities == null || userInEventEntities.isEmpty()) {
+            log.warn("No User there !!!!!!");
+            return null;
+        }
+        if (userInEventEntities.size() > 1) {
+            log.warn("User is more than one time in an event !!!!!!");
+        }
+        return userInEventEntities.get(0).getLastReadMessageTime();
     }
 }

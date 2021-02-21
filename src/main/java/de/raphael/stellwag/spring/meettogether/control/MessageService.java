@@ -8,13 +8,17 @@ import de.raphael.stellwag.spring.meettogether.entity.model.MessageTypeEnum;
 import de.raphael.stellwag.spring.meettogether.helpers.DtoToEntity;
 import de.raphael.stellwag.spring.meettogether.helpers.EntityToDto;
 import de.raphael.stellwag.spring.meettogether.websocket.WebsocketEndpoint;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
+@Slf4j
 @Service
 public class MessageService {
 
@@ -22,16 +26,14 @@ public class MessageService {
     private final DtoToEntity dtoToEntity;
     private final UserService userService;
     private final EntityToDto entityToDto;
-    private final UserInEventService userInEventService;
     private final WebsocketEndpoint websocketEndpoint;
 
     @Autowired
-    public MessageService(MessageRepository messageRepository, DtoToEntity dtoToEntity, UserService userService, EntityToDto entityToDto, UserInEventService userInEventService, WebsocketEndpoint websocketEndpoint) {
+    public MessageService(MessageRepository messageRepository, DtoToEntity dtoToEntity, UserService userService, EntityToDto entityToDto, WebsocketEndpoint websocketEndpoint) {
         this.messageRepository = messageRepository;
         this.dtoToEntity = dtoToEntity;
         this.userService = userService;
         this.entityToDto = entityToDto;
-        this.userInEventService = userInEventService;
         this.websocketEndpoint = websocketEndpoint;
     }
 
@@ -49,7 +51,6 @@ public class MessageService {
 
 
     public MessagesDto getMessages(String userId, String eventId, String count, String lastMessage, String direction) {
-
         Sort sort = Sort.by("date").ascending();
         List<MessageEntity> messageEntities = messageRepository.findByEventId(eventId, sort);
 
@@ -57,15 +58,13 @@ public class MessageService {
             return new MessagesDto();
         }
 
-        userInEventService.setLastReadMessage(userId, eventId, messageEntities.get(messageEntities.size() - 1).getId());
-
         MessagesDto messageDtos = new MessagesDto();
         messageEntities.forEach(e -> messageDtos.add(entityToDto.getMessageDto(e)));
 
         return messageDtos;
     }
 
-    public void sendGeneratedMessage(MessageTypeEnum messageType, String eventId, String userId) {
+    public void sendGeneratedMessage(MessageTypeEnum messageType, String eventId, String userId, String content) {
         String userName = userService.getUserName(userId);
 
         MessageEntity messageEntity = new MessageEntity();
@@ -74,7 +73,7 @@ public class MessageService {
         messageEntity.setEventId(eventId);
         messageEntity.setDate(LocalDateTime.now());
         messageEntity.setUserId(userId);
-        // TODO: messageEntity.setContent();
+        messageEntity.setContent(content);
 
         messageEntity = messageRepository.insert(messageEntity);
 
@@ -82,16 +81,35 @@ public class MessageService {
         sendWebsocketMessagesInNewThread(messageDto, eventId);
     }
 
+    public LocalDateTime getMessageCreationDate(String messageId) {
+        Optional<MessageEntity> messageEntity = messageRepository.findById(messageId);
+        if (messageEntity.isEmpty()) {
+            log.warn("Message Entity with id {} does not exist", messageId);
+            return null;
+        }
+        return messageEntity.get().getDate();
+    }
+
     private void sendWebsocketMessagesInNewThread(MessageDto messageDto, String eventId) {
         Runnable runnable = () -> {
-            List<String> userIdsFromEvent = userInEventService.getUserIdsFromEvent(eventId);
-            for (String userId : userIdsFromEvent) {
-                websocketEndpoint.sendNewMessageToClient(messageDto, userId);
-            }
+            websocketEndpoint.sendNewMessageToClient(messageDto, eventId);
         };
 
         Thread newThread = new Thread(runnable);
         newThread.start();
+    }
+
+    public Integer getCountFromDate(String id, LocalDateTime lastReadMessageDate) {
+        return messageRepository.countByEventIdAndDateGreaterThan(id, lastReadMessageDate);
+    }
+
+    public LocalDateTime getNewestEntityDateForEvent(String id) {
+        List<MessageEntity> messageEntities = messageRepository.getNewestEntityForEventId(id, PageRequest.of(0, 1));
+        if (messageEntities.size() != 1) {
+            log.warn("Something went wrong");
+            return null;
+        }
+        return messageEntities.get(0).getDate();
     }
 
 }

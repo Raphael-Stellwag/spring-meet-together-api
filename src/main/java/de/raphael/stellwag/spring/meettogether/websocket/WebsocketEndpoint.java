@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.raphael.stellwag.generated.dto.EventDto;
 import de.raphael.stellwag.generated.dto.MessageDto;
+import de.raphael.stellwag.spring.meettogether.control.UserInEventService;
 import de.raphael.stellwag.spring.meettogether.security.helpers.JwtTokenUtil;
 import de.raphael.stellwag.spring.meettogether.websocket.dto.WebsocketRequest;
 import de.raphael.stellwag.spring.meettogether.websocket.dto.WebsocketResponse;
@@ -11,6 +12,8 @@ import de.raphael.stellwag.spring.meettogether.websocket.dto.WebsocketResponseMe
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Component;
 
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
@@ -20,16 +23,24 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Component
 @Slf4j
 @ServerEndpoint(value = "/ws",
         configurator = CustomSpringConfigurator.class)
 public class WebsocketEndpoint {
 
-    ConcurrentHashMap<String, List<Session>> userSessionHashMap = new ConcurrentHashMap<>();
+    private final ObjectMapper om;
+    private final JwtTokenUtil jwtTokenUtil;
+    private final UserInEventService userInEventService;
+    ConcurrentHashMap<String, List<Session>> userToSessionHashMap = new ConcurrentHashMap<>();
+    ConcurrentHashMap<String, String> sessionToUserHashMap = new ConcurrentHashMap<>();
+
     @Autowired
-    private ObjectMapper om;
-    @Autowired
-    private JwtTokenUtil jwtTokenUtil;
+    public WebsocketEndpoint(ObjectMapper om, JwtTokenUtil jwtTokenUtil, @Lazy UserInEventService userInEventService) {
+        this.om = om;
+        this.jwtTokenUtil = jwtTokenUtil;
+        this.userInEventService = userInEventService;
+    }
 
     @OnOpen
     public void onOpen(Session session, EndpointConfig config) {
@@ -51,7 +62,7 @@ public class WebsocketEndpoint {
             websocketRequest = om.readValue(message, WebsocketRequest.class);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
-            throw e;
+            return;
         }
 
         switch (websocketRequest.getMethod()) {
@@ -59,13 +70,27 @@ public class WebsocketEndpoint {
                 log.info("validate Token");
                 String userId = jwtTokenUtil.getUsernameFromToken(websocketRequest.getToken());
                 log.info("Token is valid: {}", userId);
-                this.addUserSessionToHashMap(session, userId);
+                this.addUserToSessionToHashMap(session, userId);
+                this.addSessionToUserToHashMap(session, userId);
                 WebsocketResponse websocketResponse = new WebsocketResponse();
                 websocketResponse.setMethod(WebsocketResponseMethod.OK);
                 this.sendWebsocketResponseToClient(websocketResponse, userId);
             }
             case READ_RECEIVED_DATA -> {
-                //TODO implement this one
+                String userId = sessionToUserHashMap.get(session.getId());
+                if (userId == null) {
+                    log.error("Not authenticated");
+                } else if (!userId.equals(websocketRequest.getAdditionalData().getUserId())) {
+                    log.error("Not authorised");
+                } else if (!userInEventService.isUserInEvent(userId, websocketRequest.getAdditionalData().getEventId())) {
+                    log.error("Not in the event");
+                } else {
+                    userInEventService.setLastReadMessage(websocketRequest.getAdditionalData().getUserId(),
+                            websocketRequest.getAdditionalData().getEventId(), websocketRequest.getAdditionalData().getMessageId());
+                    WebsocketResponse websocketResponse = new WebsocketResponse();
+                    websocketResponse.setMethod(WebsocketResponseMethod.OK);
+                    this.sendWebsocketResponseToClient(websocketResponse, userId);
+                }
             }
             default -> {
                 log.error("websocket request method unknown: {}", websocketRequest.getMethod());
@@ -96,20 +121,24 @@ public class WebsocketEndpoint {
     }
 
     @SneakyThrows
-    public void sendNewMessageToClient(MessageDto newMessageData, String targetUserId) {
-        WebsocketResponse websocketResponse = new WebsocketResponse();
-        websocketResponse.setMethod(WebsocketResponseMethod.NEW_MESSAGE);
-        websocketResponse.setAdditionalData(om.writeValueAsString(newMessageData));
+    public void sendNewMessageToClient(MessageDto newMessageData, String eventId) {
+        List<String> userIdsFromEvent = userInEventService.getUserIdsFromEvent(eventId);
+        for (String userId : userIdsFromEvent) {
+            WebsocketResponse websocketResponse = new WebsocketResponse();
+            websocketResponse.setMethod(WebsocketResponseMethod.NEW_MESSAGE);
+            websocketResponse.setAdditionalData(om.writeValueAsString(newMessageData));
 
-        sendWebsocketResponseToClient(websocketResponse, targetUserId);
+            sendWebsocketResponseToClient(websocketResponse, userId);
+        }
     }
 
     @SneakyThrows
     private void sendWebsocketResponseToClient(WebsocketResponse websocketResponse, String targetUserId) {
         log.info("Send {} to {}", websocketResponse.getMethod().name(), targetUserId);
 
-        List<Session> sessions = userSessionHashMap.get(targetUserId);
+        List<Session> sessions = userToSessionHashMap.get(targetUserId);
         if (sessions == null) {
+            log.info("No session for targetUserId found");
             return;
         }
 
@@ -124,14 +153,24 @@ public class WebsocketEndpoint {
         }
     }
 
-    private synchronized void addUserSessionToHashMap(Session session, String userId) {
-        List<Session> sessions = userSessionHashMap.get(userId);
+    private synchronized void addUserToSessionToHashMap(Session session, String userId) {
+        List<Session> sessions = userToSessionHashMap.get(userId);
         if (sessions == null) {
             sessions = new ArrayList<>();
             sessions.add(session);
-            userSessionHashMap.put(userId, sessions);
+            userToSessionHashMap.put(userId, sessions);
         } else {
             sessions.add(session);
+        }
+    }
+
+    private synchronized void addSessionToUserToHashMap(Session session, String userId) {
+        String user = sessionToUserHashMap.get(session.getId());
+        if (user != null) {
+            //TODO: analyse better
+            log.warn("User is already in sessionToUserHashMap");
+        } else {
+            sessionToUserHashMap.put(session.getId(), userId);
         }
     }
 }

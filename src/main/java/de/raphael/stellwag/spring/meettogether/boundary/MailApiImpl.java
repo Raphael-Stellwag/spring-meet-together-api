@@ -7,6 +7,7 @@ import de.raphael.stellwag.spring.meettogether.control.MailService;
 import de.raphael.stellwag.spring.meettogether.control.UserInEventService;
 import de.raphael.stellwag.spring.meettogether.error.MeetTogetherException;
 import de.raphael.stellwag.spring.meettogether.error.MeetTogetherExceptionEnum;
+import de.raphael.stellwag.spring.meettogether.helpers.CurrentUser;
 import de.raphael.stellwag.spring.meettogether.security.helpers.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,17 +21,19 @@ public class MailApiImpl implements MailApi {
     private final MailService mailService;
     private final JwtTokenUtil jwtTokenUtil;
     private final UserInEventService userInEventService;
+    private final CurrentUser currentUser;
 
     @Autowired
-    public MailApiImpl(MailService mailService, JwtTokenUtil jwtTokenUtil, UserInEventService userInEventService) {
+    public MailApiImpl(MailService mailService, JwtTokenUtil jwtTokenUtil, UserInEventService userInEventService, CurrentUser currentUser) {
         this.mailService = mailService;
         this.jwtTokenUtil = jwtTokenUtil;
         this.userInEventService = userInEventService;
+        this.currentUser = currentUser;
     }
 
     @Override
-    public ResponseEntity<MessageDto> sendMail(String authorization, String eventId, @Valid MailDto mailBody) {
-        String userId = jwtTokenUtil.getUsernameFromToken(jwtTokenUtil.getTokenFromHeader(authorization));
+    public ResponseEntity<MessageDto> sendMail(String eventId, @Valid MailDto mailBody) {
+        String userId = currentUser.getUserName();
 
         if (!userInEventService.isUserInEvent(userId, eventId)) {
             throw new MeetTogetherException(MeetTogetherExceptionEnum.USER_NOT_IN_EVENT);

@@ -10,17 +10,21 @@ import org.springframework.stereotype.Controller;
 @Controller
 public class TokenApiImpl implements TokenApi {
 
-    @Autowired
     private TokenService tokenService;
 
+    @Autowired
+    public TokenApiImpl(TokenService tokenService) {
+        this.tokenService = tokenService;
+    }
+
     @Override
-    public ResponseEntity<TokenDto> createToken(String authorization) {
-        TokenDto tokenDto = tokenService.createNewToken(authorization);
+    public ResponseEntity<TokenDto> createToken() {
+        TokenDto tokenDto = tokenService.createNewToken();
         return ResponseEntity.ok(tokenDto);
     }
 
     @Override
-    public ResponseEntity<Void> verifyToken(String authorization) {
+    public ResponseEntity<Void> verifyToken() {
         return ResponseEntity.ok().build();
     }
 }

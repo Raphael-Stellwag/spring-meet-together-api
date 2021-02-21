@@ -5,6 +5,7 @@ import de.raphael.stellwag.generated.dto.UserDto;
 import de.raphael.stellwag.spring.meettogether.control.UserService;
 import de.raphael.stellwag.spring.meettogether.error.MeetTogetherException;
 import de.raphael.stellwag.spring.meettogether.error.MeetTogetherExceptionEnum;
+import de.raphael.stellwag.spring.meettogether.helpers.CurrentUser;
 import de.raphael.stellwag.spring.meettogether.security.helpers.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,11 +19,13 @@ public class UserApiImpl implements UserApi {
 
     private final UserService userService;
     private final JwtTokenUtil jwtTokenUtil;
+    private final CurrentUser currentUser;
 
     @Autowired
-    public UserApiImpl(UserService userService, JwtTokenUtil jwtTokenUtil) {
+    public UserApiImpl(UserService userService, JwtTokenUtil jwtTokenUtil, CurrentUser currentUser) {
         this.userService = userService;
         this.jwtTokenUtil = jwtTokenUtil;
+        this.currentUser = currentUser;
     }
 
     @Override
@@ -33,21 +36,22 @@ public class UserApiImpl implements UserApi {
 
     //TODO: check for what this is used
     @Override
-    public ResponseEntity<UserDto> getUserById(String userId, String authorization) {
+    public ResponseEntity<UserDto> getUserById(String userId) {
         return null;
     }
 
-    //TODO delete authorization here
+    // TODO Test if name changes everywhere
     @Override
-    public ResponseEntity<UserDto> loginUser(@Valid UserDto user, String authorization) {
+    public ResponseEntity<UserDto> loginUser(@Valid UserDto user) {
         String userId = userService.getUserId(user.getEmail(), user.getPassword());
         UserDto userDto = userService.getUserDto(userId);
         return ResponseEntity.ok(userDto);
     }
 
+    // TODO Test if name changes everywhere
     @Override
-    public ResponseEntity<UserDto> registerUser(String userId, @Valid UserDto user, String authorization) {
-        if (!jwtTokenUtil.headerBelongsToUser(authorization, userId)) {
+    public ResponseEntity<UserDto> registerUser(String userId, @Valid UserDto user) {
+        if (!userId.equals(currentUser.getUserName())) {
             throw new MeetTogetherException(MeetTogetherExceptionEnum.NOT_ALLOWED);
         }
         if (userService.doesEmailExist(user.getEmail())) {
@@ -58,10 +62,11 @@ public class UserApiImpl implements UserApi {
         return ResponseEntity.ok(userDto);
     }
 
+    // TODO Rename Name everywhere in DB
     @Override
-    public ResponseEntity<UserDto> renameUser(String userId, @Valid UserDto username, String authorization) {
+    public ResponseEntity<UserDto> renameUser(String userId, @Valid UserDto username) {
         log.debug("User {} wants to rename to {}", userId, username.getName());
-        if (!jwtTokenUtil.headerBelongsToUser(authorization, userId)) {
+        if (!userId.equals(currentUser.getUserName())) {
             throw new MeetTogetherException(MeetTogetherExceptionEnum.NOT_ALLOWED);
         }
         UserDto userDto = userService.renameUser(userId, username.getName());
