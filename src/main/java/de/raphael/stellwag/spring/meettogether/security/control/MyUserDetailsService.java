@@ -49,18 +49,18 @@ public class MyUserDetailsService implements UserDetailsService {
     }
 
     public boolean checkBasicAuth(String authorization) {
-        UserDetails userDetailsRequest = getUserDetailsFromToken(authorization);
+        UserDetails userDetailsRequest = getUserDetailsFromBasicAuth(authorization);
         UserDetails userDetailsDb = loadUserByUsername(userDetailsRequest.getUsername());
         return passwordEncoder.matches(userDetailsRequest.getPassword(), userDetailsDb.getPassword());
     }
 
-    public UserDetails getUserDetailsFromToken(String authorization) {
+    public UserDetails getUserDetailsFromBasicAuth(String authorization) {
         Base64.Decoder decoder = Base64.getDecoder();
-        if (authorization.length()<7) {
+        if (authorization.length() < 7) {
             throw new RuntimeException("Not a Basic Authentification");
         }
         authorization = authorization.substring(6);
-        byte [] test = decoder.decode(authorization);
+        byte[] test = decoder.decode(authorization);
         authorization = new String(test);
 
         if (!authorization.contains(":")) {

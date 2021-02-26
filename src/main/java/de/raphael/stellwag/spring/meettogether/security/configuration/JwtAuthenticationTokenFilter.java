@@ -22,12 +22,12 @@ import java.io.IOException;
 @Component
 public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
-    private final MyUserDetailsService jwtUserDetailsService;
+    private final MyUserDetailsService myUserDetailsService;
     private final JwtTokenUtil jwtTokenUtil;
 
     @Autowired
-    public JwtAuthenticationTokenFilter(MyUserDetailsService jwtUserDetailsService, JwtTokenUtil jwtTokenUtil) {
-        this.jwtUserDetailsService = jwtUserDetailsService;
+    public JwtAuthenticationTokenFilter(MyUserDetailsService myUserDetailsService, JwtTokenUtil jwtTokenUtil) {
+        this.myUserDetailsService = myUserDetailsService;
         this.jwtTokenUtil = jwtTokenUtil;
     }
 
@@ -47,10 +47,15 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     }
 
     private void authenticateBasicAuth(HttpServletRequest request, String requestTokenHeader) {
+        log.info(requestTokenHeader);
         if (requestTokenHeader != null && requestTokenHeader.startsWith("Basic ")) {
-            boolean hasValidBasicAuth = jwtUserDetailsService.checkBasicAuth(requestTokenHeader);
+            log.info("before validation");
+            boolean hasValidBasicAuth = myUserDetailsService.checkBasicAuth(requestTokenHeader);
+            log.info("after validation, {}", hasValidBasicAuth);
             if (hasValidBasicAuth) {
-                UserDetails userDetails = jwtUserDetailsService.getUserDetailsFromToken(requestTokenHeader);
+                log.info("before userDetails");
+                UserDetails userDetails = myUserDetailsService.getUserDetailsFromBasicAuth(requestTokenHeader);
+                log.info("after userDetails, {}", userDetails);
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
                 usernamePasswordAuthenticationToken
@@ -82,7 +87,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         // Once we get the token validate it.
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-            UserDetails dbUserDetails = this.jwtUserDetailsService.loadUserByUsername(username);
+            UserDetails dbUserDetails = this.myUserDetailsService.loadUserByUsername(username);
 
             // if token is valid configure Spring Security to manually set
             // authentication
