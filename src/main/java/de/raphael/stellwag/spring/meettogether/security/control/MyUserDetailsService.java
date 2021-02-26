@@ -52,8 +52,10 @@ public class MyUserDetailsService implements UserDetailsService {
         log.info("before userDetailsRequest");
         UserDetails userDetailsRequest = getUserDetailsFromBasicAuth(authorization);
         log.info("after userDetailsRequest , {}", userDetailsRequest);
+        log.info("after userDetailsRequest Password , {}", userDetailsRequest.getPassword());
         UserDetails userDetailsDb = loadUserByUsername(userDetailsRequest.getUsername());
         log.info("after userDetailsDb, {}", userDetailsDb);
+        log.info("after userDetailsDb Password, {}", userDetailsDb.getPassword());
         log.info("equals: {}", passwordEncoder.matches(userDetailsRequest.getPassword(), userDetailsDb.getPassword()));
         return passwordEncoder.matches(userDetailsRequest.getPassword(), userDetailsDb.getPassword());
     }
