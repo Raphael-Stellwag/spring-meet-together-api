@@ -1,4 +1,4 @@
-package de.raphael.stellwag.spring.meettogether.websocket;
+package de.raphael.stellwag.spring.meettogether.websocket.config;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.ApplicationContext;

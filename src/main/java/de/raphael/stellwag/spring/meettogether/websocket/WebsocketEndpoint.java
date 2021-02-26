@@ -6,6 +6,7 @@ import de.raphael.stellwag.generated.dto.EventDto;
 import de.raphael.stellwag.generated.dto.MessageDto;
 import de.raphael.stellwag.spring.meettogether.control.UserInEventService;
 import de.raphael.stellwag.spring.meettogether.security.helpers.JwtTokenUtil;
+import de.raphael.stellwag.spring.meettogether.websocket.config.CustomSpringConfigurator;
 import de.raphael.stellwag.spring.meettogether.websocket.dto.WebsocketRequest;
 import de.raphael.stellwag.spring.meettogether.websocket.dto.WebsocketResponse;
 import de.raphael.stellwag.spring.meettogether.websocket.dto.WebsocketResponseMethod;
@@ -104,6 +105,10 @@ public class WebsocketEndpoint {
     public void onClose(Session client, CloseReason reason) {
         log.info("connection was closed");
         log.info("{}: {}", reason.getCloseCode().getCode(), reason.getReasonPhrase());
+
+        String userId = sessionToUserHashMap.get(client.getId());
+        removeSessionFromUserToSessionHashMap(client, userId);
+        removeSessionFromSessionToUserHashMap(client);
     }
 
     @OnError
@@ -173,4 +178,16 @@ public class WebsocketEndpoint {
             sessionToUserHashMap.put(session.getId(), userId);
         }
     }
+
+    private synchronized void removeSessionFromUserToSessionHashMap(Session session, String userId) {
+        List<Session> sessions = userToSessionHashMap.get(userId);
+        if (sessions != null) {
+            sessions.remove(session);
+        }
+    }
+
+    private synchronized void removeSessionFromSessionToUserHashMap(Session session) {
+        sessionToUserHashMap.remove(session.getId());
+    }
+
 }
