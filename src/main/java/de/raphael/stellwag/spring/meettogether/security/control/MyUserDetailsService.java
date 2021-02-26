@@ -49,8 +49,12 @@ public class MyUserDetailsService implements UserDetailsService {
     }
 
     public boolean checkBasicAuth(String authorization) {
+        log.info("before userDetailsRequest");
         UserDetails userDetailsRequest = getUserDetailsFromBasicAuth(authorization);
+        log.info("after userDetailsRequest , {}", userDetailsRequest);
         UserDetails userDetailsDb = loadUserByUsername(userDetailsRequest.getUsername());
+        log.info("after userDetailsDb, {}", userDetailsDb);
+        log.info("equals: {}", passwordEncoder.matches(userDetailsRequest.getPassword(), userDetailsDb.getPassword()));
         return passwordEncoder.matches(userDetailsRequest.getPassword(), userDetailsDb.getPassword());
     }
 
