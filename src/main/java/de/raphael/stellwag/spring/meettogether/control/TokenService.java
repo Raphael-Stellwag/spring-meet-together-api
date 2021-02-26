@@ -9,6 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import java.time.ZoneId;
+import java.util.Date;
+
 @Slf4j
 @Service
 public class TokenService {
@@ -27,7 +30,12 @@ public class TokenService {
         TokenDto tokenDto = new TokenDto();
 
         UserDetails userDetails = currentUser.getUserDetails();
-        tokenDto.setToken(jwtTokenUtil.generateToken(userDetails));
+
+        String token = jwtTokenUtil.generateToken(userDetails);
+        Date expiration = jwtTokenUtil.getExpirationDateFromToken(token);
+
+        tokenDto.setToken(token);
+        tokenDto.setExpirationDate(expiration.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
 
         return tokenDto;
     }
