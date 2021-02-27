@@ -6,10 +6,7 @@ import de.raphael.stellwag.generated.dto.ApiResponseDto;
 import de.raphael.stellwag.generated.dto.EventDto;
 import de.raphael.stellwag.generated.dto.EventsDto;
 import de.raphael.stellwag.generated.dto.ParticipantsDto;
-import de.raphael.stellwag.spring.meettogether.control.EventService;
-import de.raphael.stellwag.spring.meettogether.control.MessageService;
-import de.raphael.stellwag.spring.meettogether.control.ParticipantService;
-import de.raphael.stellwag.spring.meettogether.control.UserInEventService;
+import de.raphael.stellwag.spring.meettogether.control.*;
 import de.raphael.stellwag.spring.meettogether.entity.model.MessageTypeEnum;
 import de.raphael.stellwag.spring.meettogether.error.MeetTogetherException;
 import de.raphael.stellwag.spring.meettogether.error.MeetTogetherExceptionEnum;
@@ -34,14 +31,16 @@ public class EventApiImpl implements EventApi {
     private final ParticipantService participantService;
     private final MessageService messageService;
     private final CurrentUser currentUser;
+    private final TimePlaceSuggestionService timePlaceSuggestionService;
 
     @Autowired
-    EventApiImpl(EventService eventService, UserInEventService userInEventService, JwtTokenUtil jwtTokenUtil, ParticipantService participantService, MessageService messageService, CurrentUser currentUser, ObjectMapper om) {
+    EventApiImpl(EventService eventService, UserInEventService userInEventService, JwtTokenUtil jwtTokenUtil, ParticipantService participantService, MessageService messageService, CurrentUser currentUser, ObjectMapper om, TimePlaceSuggestionService timePlaceSuggestionService, UserInTimePlaceSuggestionService userInTimePlaceSuggestion) {
         this.eventService = eventService;
         this.userInEventService = userInEventService;
         this.participantService = participantService;
         this.messageService = messageService;
         this.currentUser = currentUser;
+        this.timePlaceSuggestionService = timePlaceSuggestionService;
     }
 
     @Override
@@ -51,8 +50,12 @@ public class EventApiImpl implements EventApi {
             throw new MeetTogetherException(MeetTogetherExceptionEnum.NOT_ALLOWED);
         }
         EventDto newEvent = eventService.createNewEvent(userId, body);
-
         messageService.sendGeneratedMessage(MessageTypeEnum.EVENT_CREATED, newEvent.getId(), userId, newEvent);
+
+        if (body.getStartDate() != null) {
+            newEvent = timePlaceSuggestionService.createTimePlaceSuggestionFromEventDto
+                    (newEvent.getId(), userId, body);
+        }
 
         return ResponseEntity.created(URI.create("/api/v1/events/" + newEvent.getId())).body(newEvent);
     }

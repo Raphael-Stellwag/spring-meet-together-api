@@ -44,6 +44,16 @@ public class DtoToEntity {
         return entity;
     }
 
+    public TimePlaceSuggestionEntity getTimePlaceSuggestionEntity(EventDto eventDto, String eventId) {
+        TimePlaceSuggestionEntity entity = new TimePlaceSuggestionEntity();
+        entity.setLink(eventDto.getLink());
+        entity.setEndDate(eventDto.getEndDate());
+        entity.setStartDate(eventDto.getStartDate());
+        entity.setPlace(eventDto.getPlace());
+        entity.setEventId(eventId);
+        return entity;
+    }
+
     public MessageEntity getMessageEntity(MessageDto message, String userId,
                                           String userName, String eventId) {
         MessageEntity messageEntity = new MessageEntity();

@@ -4,6 +4,7 @@ import de.raphael.stellwag.generated.dto.EventDto;
 import de.raphael.stellwag.generated.dto.TimePlaceSuggestionDto;
 import de.raphael.stellwag.generated.dto.TimePlaceSuggestionsDto;
 import de.raphael.stellwag.spring.meettogether.entity.dao.TimePlaceSuggestionRepository;
+import de.raphael.stellwag.spring.meettogether.entity.model.MessageTypeEnum;
 import de.raphael.stellwag.spring.meettogether.entity.model.TimePlaceSuggestionEntity;
 import de.raphael.stellwag.spring.meettogether.error.MeetTogetherException;
 import de.raphael.stellwag.spring.meettogether.error.MeetTogetherExceptionEnum;
@@ -24,15 +25,17 @@ public class TimePlaceSuggestionService {
     private final DtoToEntity dtoToEntity;
     private final ParticipantService participantService;
     private final EventService eventService;
+    private final MessageService messageService;
 
     @Autowired
     public TimePlaceSuggestionService(TimePlaceSuggestionRepository timePlaceSuggestionRepository, EntityToDto entityToDto, DtoToEntity dtoToEntity,
-                                      ParticipantService participantService, EventService eventService) {
+                                      ParticipantService participantService, EventService eventService, MessageService messageService) {
         this.timePlaceSuggestionRepository = timePlaceSuggestionRepository;
         this.entityToDto = entityToDto;
         this.dtoToEntity = dtoToEntity;
         this.participantService = participantService;
         this.eventService = eventService;
+        this.messageService = messageService;
     }
 
     public TimePlaceSuggestionsDto getAllForOneEvent(String eventId) {
@@ -78,5 +81,13 @@ public class TimePlaceSuggestionService {
             throw new MeetTogetherException(MeetTogetherExceptionEnum.TIME_PLACE_SUGGESTION_DOES_NOT_EXIST);
         }
         return eventService.timePlaceWasChoosen(eventId, optional.get());
+    }
+
+    public EventDto createTimePlaceSuggestionFromEventDto(String eventId, String userId, EventDto eventData) {
+        TimePlaceSuggestionEntity timePlaceSuggestionEntity = dtoToEntity.getTimePlaceSuggestionEntity(eventData, eventId);
+        TimePlaceSuggestionEntity writtenEntity = timePlaceSuggestionRepository.save(timePlaceSuggestionEntity);
+        messageService.sendGeneratedMessage(MessageTypeEnum.TIME_PLACE_SUGGESTION_CHOOSEN,
+                eventId, userId, writtenEntity);
+        return eventService.timePlaceWasChoosen(eventId, writtenEntity);
     }
 }

@@ -21,6 +21,8 @@ public class EntityToDto {
         if (writtenEntity.getChosenTimePlaceSuggestionEntity() != null) {
             eventDto.setStartDate(writtenEntity.getChosenTimePlaceSuggestionEntity().getStartDate());
             eventDto.setEndDate(writtenEntity.getChosenTimePlaceSuggestionEntity().getEndDate());
+            eventDto.setLink(writtenEntity.getChosenTimePlaceSuggestionEntity().getLink());
+            eventDto.setPlace(writtenEntity.getChosenTimePlaceSuggestionEntity().getPlace());
         }
 
         if (writtenEntity.getCreatorId().equals(userId)) {

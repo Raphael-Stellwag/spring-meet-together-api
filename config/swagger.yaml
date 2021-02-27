@@ -34,31 +34,6 @@ paths:
           description: successful operation
           content: { }
       x-swagger-router-controller: Ping
-  /api/v1/user:
-    post:
-      tags:
-        - user
-      summary: Add a new user to the database
-      operationId: addUser
-      requestBody:
-        description: User object that needs to be added to the database
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/User'
-        required: true
-      responses:
-        200:
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
-        400:
-          description: Invalid input, probably missing neccessary properties in body
-          content: { }
-      x-swagger-router-controller: User
-      x-codegen-request-body-name: body
   /api/v1/user/login:
     put:
       tags:
@@ -850,15 +825,19 @@ components:
           type: string
         accesstoken:
           type: string
+        creator:
+          type: boolean
+          default: false
+        place:
+          type: string
+        link:
+          type: string
         start_date:
           type: string
           format: date-time
         end_date:
           type: string
           format: date-time
-        creator:
-          type: boolean
-          default: false
         last_message_time:
           type: string
           format: date-time
