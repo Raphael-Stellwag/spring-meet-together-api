@@ -53,4 +53,13 @@ public class UserInTimePlaceSuggestionService {
         }
         userInTimePlaceRepository.delete(optionalEntity.get());
     }
+
+    public void deleteTimePlaceSuggestion(String timePlaceSuggestionId) {
+        List<UserInTimePlaceSuggestionEntity> userInTimePlaceSuggestionEntities =
+                userInTimePlaceRepository.findByTimePlaceSuggestionId(timePlaceSuggestionId);
+
+        if (!userInTimePlaceSuggestionEntities.isEmpty()) {
+            userInTimePlaceRepository.deleteAll(userInTimePlaceSuggestionEntities);
+        }
+    }
 }

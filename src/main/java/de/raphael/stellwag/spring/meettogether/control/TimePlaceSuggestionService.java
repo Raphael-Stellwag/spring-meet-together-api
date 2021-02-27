@@ -26,16 +26,18 @@ public class TimePlaceSuggestionService {
     private final ParticipantService participantService;
     private final EventService eventService;
     private final MessageService messageService;
+    private final UserInTimePlaceSuggestionService userInTimePlaceSuggestionService;
 
     @Autowired
     public TimePlaceSuggestionService(TimePlaceSuggestionRepository timePlaceSuggestionRepository, EntityToDto entityToDto, DtoToEntity dtoToEntity,
-                                      ParticipantService participantService, EventService eventService, MessageService messageService) {
+                                      ParticipantService participantService, EventService eventService, MessageService messageService, UserInTimePlaceSuggestionService userInTimePlaceSuggestionService) {
         this.timePlaceSuggestionRepository = timePlaceSuggestionRepository;
         this.entityToDto = entityToDto;
         this.dtoToEntity = dtoToEntity;
         this.participantService = participantService;
         this.eventService = eventService;
         this.messageService = messageService;
+        this.userInTimePlaceSuggestionService = userInTimePlaceSuggestionService;
     }
 
     public TimePlaceSuggestionsDto getAllForOneEvent(String eventId) {
@@ -89,5 +91,15 @@ public class TimePlaceSuggestionService {
         messageService.sendGeneratedMessage(MessageTypeEnum.TIME_PLACE_SUGGESTION_CHOOSEN,
                 eventId, userId, writtenEntity);
         return eventService.timePlaceWasChoosen(eventId, writtenEntity);
+    }
+
+    public void deleteAllFromEvent(String eventId) {
+        List<TimePlaceSuggestionEntity> timePlaceSuggestionEntities = timePlaceSuggestionRepository.findByEventId(eventId);
+        if (!timePlaceSuggestionEntities.isEmpty()) {
+            timePlaceSuggestionEntities.forEach(timePlaceSuggestionEntity ->
+                    userInTimePlaceSuggestionService.deleteTimePlaceSuggestion(timePlaceSuggestionEntity.getId()));
+
+            timePlaceSuggestionRepository.deleteAll(timePlaceSuggestionEntities);
+        }
     }
 }

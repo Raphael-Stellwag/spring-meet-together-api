@@ -93,4 +93,11 @@ public class UserInEventService {
         }
         return userInEventEntities.get(0).getLastReadMessageTime();
     }
+
+    public void deleteAllUsersFromEvent(String eventId) {
+        List<UserInEventEntity> userInEventEntities = userInEventRepository.findByEventId(eventId);
+        if (!userInEventEntities.isEmpty()) {
+            userInEventRepository.deleteAll(userInEventEntities);
+        }
+    }
 }

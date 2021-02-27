@@ -11,6 +11,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface MessageRepository extends MongoRepository<MessageEntity, String> {
+    List<MessageEntity> findByEventId(String eventId);
+
     List<MessageEntity> findByEventId(String eventId, Sort sort);
 
     int countByEventIdAndDateGreaterThan(String id, LocalDateTime lastReadMessageDate);
@@ -19,4 +21,5 @@ public interface MessageRepository extends MongoRepository<MessageEntity, String
     List<MessageEntity> getNewestEntityForEventId(String id, Pageable pageable);
 
     List<MessageEntity> findByUserId(String userId);
+
 }

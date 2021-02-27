@@ -3,7 +3,6 @@ package de.raphael.stellwag.spring.meettogether.control;
 import de.raphael.stellwag.generated.dto.EventDto;
 import de.raphael.stellwag.generated.dto.EventsDto;
 import de.raphael.stellwag.spring.meettogether.entity.dao.EventRepository;
-import de.raphael.stellwag.spring.meettogether.entity.dao.UserInEventRepository;
 import de.raphael.stellwag.spring.meettogether.entity.model.EventEntity;
 import de.raphael.stellwag.spring.meettogether.entity.model.TimePlaceSuggestionEntity;
 import de.raphael.stellwag.spring.meettogether.entity.model.UserInEventEntity;
@@ -31,15 +30,19 @@ public class EventService {
     private final EntityToDto entityToDto;
     private final WebsocketEndpoint websocketEndpoint;
     private final MessageService messageService;
+    private final TimePlaceSuggestionService timePlaceSuggestionService;
 
     @Autowired
-    EventService(EventRepository eventRepository, UserInEventRepository userInEventRepository, UserInEventService userInEventService, DtoToEntity dtoToEntity, EntityToDto entityToDto, WebsocketEndpoint websocketEndpoint, MessageService messageService) {
+    EventService(EventRepository eventRepository, UserInEventService userInEventService,
+                 DtoToEntity dtoToEntity, EntityToDto entityToDto, WebsocketEndpoint websocketEndpoint,
+                 MessageService messageService, TimePlaceSuggestionService timePlaceSuggestionService) {
         this.eventRepository = eventRepository;
         this.userInEventService = userInEventService;
         this.dtoToEntity = dtoToEntity;
         this.entityToDto = entityToDto;
         this.websocketEndpoint = websocketEndpoint;
         this.messageService = messageService;
+        this.timePlaceSuggestionService = timePlaceSuggestionService;
     }
 
     public EventDto createNewEvent(String userId, EventDto eventData) {
@@ -137,5 +140,13 @@ public class EventService {
 
         Thread newThread = new Thread(runnable);
         newThread.start();
+    }
+
+    public void deleteEvent(String eventId) {
+        EventEntity eventEntity = getEventEntity(eventId);
+        eventRepository.delete(eventEntity);
+        messageService.deleteMessagesOfEvent(eventId);
+        userInEventService.deleteAllUsersFromEvent(eventId);
+        timePlaceSuggestionService.deleteAllFromEvent(eventId);
     }
 }

@@ -1,7 +1,6 @@
 package de.raphael.stellwag.spring.meettogether.boundary;
 
 import de.raphael.stellwag.generated.api.EventApi;
-import de.raphael.stellwag.generated.dto.ApiResponseDto;
 import de.raphael.stellwag.generated.dto.EventDto;
 import de.raphael.stellwag.generated.dto.EventsDto;
 import de.raphael.stellwag.generated.dto.ParticipantsDto;
@@ -12,6 +11,7 @@ import de.raphael.stellwag.spring.meettogether.error.MeetTogetherExceptionEnum;
 import de.raphael.stellwag.spring.meettogether.helpers.CurrentUser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -74,10 +74,14 @@ public class EventApiImpl implements EventApi {
         return ResponseEntity.ok(eventDto);
     }
 
-    //TODO implementation needed => not yet used
     @Override
-    public ResponseEntity<ApiResponseDto> deleteEvent(String userId, String eventId) {
-        return null;
+    public ResponseEntity<Void> deleteEvent(String userId, String eventId) {
+        if (!userId.equals(currentUser.getUserName()) ||
+                !eventService.hasUserCreatedEvent(userId, eventId)) {
+            throw new MeetTogetherException(MeetTogetherExceptionEnum.NOT_ALLOWED);
+        }
+        eventService.deleteEvent(eventId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @Override

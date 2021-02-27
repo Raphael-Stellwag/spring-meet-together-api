@@ -125,4 +125,11 @@ public class MessageService {
             messageRepository.save(messageEntity);
         });
     }
+
+    public void deleteMessagesOfEvent(String eventId) {
+        List<MessageEntity> messageEntities = messageRepository.findByEventId(eventId);
+        if (!messageEntities.isEmpty()) {
+            messageRepository.deleteAll(messageEntities);
+        }
+    }
 }

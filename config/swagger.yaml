@@ -300,12 +300,8 @@ paths:
           schema:
             type: string
       responses:
-        200:
+        204:
           description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponse'
         400:
           description: User not allowed to delete this event
           content: { }
