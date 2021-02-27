@@ -13,6 +13,7 @@ import de.raphael.stellwag.spring.meettogether.helpers.EntityToDto;
 import de.raphael.stellwag.spring.meettogether.websocket.WebsocketEndpoint;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -35,7 +36,7 @@ public class EventService {
     @Autowired
     EventService(EventRepository eventRepository, UserInEventService userInEventService,
                  DtoToEntity dtoToEntity, EntityToDto entityToDto, WebsocketEndpoint websocketEndpoint,
-                 MessageService messageService, TimePlaceSuggestionService timePlaceSuggestionService) {
+                 MessageService messageService, @Lazy TimePlaceSuggestionService timePlaceSuggestionService) {
         this.eventRepository = eventRepository;
         this.userInEventService = userInEventService;
         this.dtoToEntity = dtoToEntity;
