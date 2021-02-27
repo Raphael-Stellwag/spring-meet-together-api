@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -58,45 +59,18 @@ public class WebsocketEndpoint {
     public void onMessage(String message, Session session) {
 
         log.info(message);
-        WebsocketRequest websocketRequest = null;
+        WebsocketRequest websocketRequest;
         try {
             websocketRequest = om.readValue(message, WebsocketRequest.class);
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            log.warn("Could not parse the message to WebsocketRequest -> message will be ignored");
             return;
         }
 
         switch (websocketRequest.getMethod()) {
-            case AUTHENTICATE -> {
-                log.info("validate Token");
-                String userId = jwtTokenUtil.getUsernameFromToken(websocketRequest.getToken());
-                log.info("Token is valid: {}", userId);
-                this.addUserToSessionToHashMap(session, userId);
-                this.addSessionToUserToHashMap(session, userId);
-                WebsocketResponse websocketResponse = new WebsocketResponse();
-                websocketResponse.setMethod(WebsocketResponseMethod.OK);
-                this.sendWebsocketResponseToClient(websocketResponse, userId);
-            }
-            case READ_RECEIVED_DATA -> {
-                String userId = sessionToUserHashMap.get(session.getId());
-                if (userId == null) {
-                    log.error("Not authenticated");
-                } else if (!userId.equals(websocketRequest.getAdditionalData().getUserId())) {
-                    log.error("Not authorised");
-                } else if (!userInEventService.isUserInEvent(userId, websocketRequest.getAdditionalData().getEventId())) {
-                    log.error("Not in the event");
-                } else {
-                    userInEventService.setLastReadMessage(websocketRequest.getAdditionalData().getUserId(),
-                            websocketRequest.getAdditionalData().getEventId(), websocketRequest.getAdditionalData().getMessageId());
-                    WebsocketResponse websocketResponse = new WebsocketResponse();
-                    websocketResponse.setMethod(WebsocketResponseMethod.OK);
-                    this.sendWebsocketResponseToClient(websocketResponse, userId);
-                }
-            }
-            default -> {
-                log.error("websocket request method unknown: {}", websocketRequest.getMethod());
-                session.close();
-            }
+            case AUTHENTICATE -> websocketClientCalledAuthenticate(session, websocketRequest);
+            case READ_RECEIVED_DATA -> websocketClientCalledReadReceivedData(session, websocketRequest);
+            default -> websocketClientCalledUnknownMethod(session, websocketRequest);
         }
 
     }
@@ -137,6 +111,39 @@ public class WebsocketEndpoint {
         }
     }
 
+    private void websocketClientCalledUnknownMethod(Session session, WebsocketRequest websocketRequest) throws IOException {
+        log.error("websocket request method unknown: {}", websocketRequest.getMethod());
+        session.close();
+    }
+
+    private void websocketClientCalledReadReceivedData(Session session, WebsocketRequest websocketRequest) {
+        String userId = sessionToUserHashMap.get(session.getId());
+        if (userId == null) {
+            log.error("Not authenticated");
+        } else if (!userId.equals(websocketRequest.getAdditionalData().getUserId())) {
+            log.error("Not authorised");
+        } else if (!userInEventService.isUserInEvent(userId, websocketRequest.getAdditionalData().getEventId())) {
+            log.error("Not in the event");
+        } else {
+            userInEventService.setLastReadMessage(websocketRequest.getAdditionalData().getUserId(),
+                    websocketRequest.getAdditionalData().getEventId(), websocketRequest.getAdditionalData().getMessageId());
+            WebsocketResponse websocketResponse = new WebsocketResponse();
+            websocketResponse.setMethod(WebsocketResponseMethod.OK);
+            this.sendWebsocketResponseToClient(websocketResponse, userId);
+        }
+    }
+
+    private void websocketClientCalledAuthenticate(Session session, WebsocketRequest websocketRequest) {
+        log.info("validate Token");
+        String userId = jwtTokenUtil.getUsernameFromToken(websocketRequest.getToken());
+        log.info("Token is valid: {}", userId);
+        this.addUserToSessionToHashMap(session, userId);
+        this.addSessionToUserToHashMap(session, userId);
+        WebsocketResponse websocketResponse = new WebsocketResponse();
+        websocketResponse.setMethod(WebsocketResponseMethod.OK);
+        this.sendWebsocketResponseToClient(websocketResponse, userId);
+    }
+
     @SneakyThrows
     private void sendWebsocketResponseToClient(WebsocketResponse websocketResponse, String targetUserId) {
         log.info("Send {} to {}", websocketResponse.getMethod().name(), targetUserId);
@@ -172,8 +179,7 @@ public class WebsocketEndpoint {
     private synchronized void addSessionToUserToHashMap(Session session, String userId) {
         String user = sessionToUserHashMap.get(session.getId());
         if (user != null) {
-            //TODO: analyse better
-            log.warn("User is already in sessionToUserHashMap");
+            log.warn("User is already in sessionToUserHashMap --> probably authorize was called two times");
         } else {
             sessionToUserHashMap.put(session.getId(), userId);
         }

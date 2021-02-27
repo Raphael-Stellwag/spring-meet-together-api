@@ -32,13 +32,6 @@ public class UserApiImpl implements UserApi {
         return ResponseEntity.created(URI.create("/api/v1/user/" + userDto.getId())).body(userDto);
     }
 
-    //TODO: check for what this is used
-    @Override
-    public ResponseEntity<UserDto> getUserById(String userId) {
-        return null;
-    }
-
-    // TODO Test if name changes everywhere
     @Override
     public ResponseEntity<UserDto> loginUser(@Valid UserDto user) {
         String userId = userService.getUserId(user.getEmail(), user.getPassword());
@@ -46,7 +39,6 @@ public class UserApiImpl implements UserApi {
         return ResponseEntity.ok(userDto);
     }
 
-    // TODO Test if name changes everywhere --> should be now
     @Override
     public ResponseEntity<UserDto> registerUser(String userId, @Valid UserDto user) {
         if (!userId.equals(currentUser.getUserName())) {
@@ -60,7 +52,6 @@ public class UserApiImpl implements UserApi {
         return ResponseEntity.ok(userDto);
     }
 
-    // TODO Rename Name everywhere in DB
     @Override
     public ResponseEntity<UserDto> renameUser(String userId, @Valid UserDto username) {
         log.debug("User {} wants to rename to {}", userId, username.getName());

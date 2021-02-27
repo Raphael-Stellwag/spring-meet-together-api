@@ -53,7 +53,7 @@ public class MessageApiImpl implements MessageApi {
             throw new MeetTogetherException(MeetTogetherExceptionEnum.USER_NOT_IN_EVENT);
         }
 
-        MessagesDto messageDtoList = this.messageService.getMessages(userId, eventId, count, lastMessage, direction);
+        MessagesDto messageDtoList = this.messageService.getMessages(eventId);
 
         String messageId = messageDtoList.get(messageDtoList.size() - 1).getId();
         userInEventService.setLastReadMessage(userId, eventId, messageId);

@@ -54,7 +54,7 @@ public class MessageService {
     }
 
 
-    public MessagesDto getMessages(String userId, String eventId, String count, String lastMessage, String direction) {
+    public MessagesDto getMessages(String eventId) {
         Sort sort = Sort.by("date").ascending();
         List<MessageEntity> messageEntities = messageRepository.findByEventId(eventId, sort);
 

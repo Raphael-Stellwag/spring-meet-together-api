@@ -1,6 +1,5 @@
 package de.raphael.stellwag.spring.meettogether.boundary;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import de.raphael.stellwag.generated.api.EventApi;
 import de.raphael.stellwag.generated.dto.ApiResponseDto;
 import de.raphael.stellwag.generated.dto.EventDto;
@@ -11,7 +10,6 @@ import de.raphael.stellwag.spring.meettogether.entity.model.MessageTypeEnum;
 import de.raphael.stellwag.spring.meettogether.error.MeetTogetherException;
 import de.raphael.stellwag.spring.meettogether.error.MeetTogetherExceptionEnum;
 import de.raphael.stellwag.spring.meettogether.helpers.CurrentUser;
-import de.raphael.stellwag.spring.meettogether.security.helpers.JwtTokenUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +32,9 @@ public class EventApiImpl implements EventApi {
     private final TimePlaceSuggestionService timePlaceSuggestionService;
 
     @Autowired
-    EventApiImpl(EventService eventService, UserInEventService userInEventService, JwtTokenUtil jwtTokenUtil, ParticipantService participantService, MessageService messageService, CurrentUser currentUser, ObjectMapper om, TimePlaceSuggestionService timePlaceSuggestionService, UserInTimePlaceSuggestionService userInTimePlaceSuggestion) {
+    EventApiImpl(EventService eventService, UserInEventService userInEventService,
+                 ParticipantService participantService, MessageService messageService,
+                 CurrentUser currentUser, TimePlaceSuggestionService timePlaceSuggestionService) {
         this.eventService = eventService;
         this.userInEventService = userInEventService;
         this.participantService = participantService;
@@ -88,7 +88,6 @@ public class EventApiImpl implements EventApi {
         }
         userInEventService.deleteUserFromEvent(userId, eventId);
 
-        //TODO test this
         messageService.sendGeneratedMessage(MessageTypeEnum.USER_LEFT_EVENT, eventId, userId, new Object());
 
         return ResponseEntity.ok().build();
