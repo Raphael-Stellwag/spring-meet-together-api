@@ -34,9 +34,9 @@ class PingApiImplIntegrationTest {
     //Basic NjAzYmQxNzg5ZDg0NGY0NjRlN2Q3OTFhOmtTS1FsRnBVYlpKbWxwQTVRdWxt
     //Basic
     @ParameterizedTest
-    @ValueSource(strings = {"Basic NjAzYmQyY2E5ZDg0NGY0NjRlN2Q3OTJjOlFwYk1qakd4Q3NDdE5oODdhbHdJ",
-            "Basic NjAzYmQwZjI5ZDg0NGY0NjRlN2Q3OTEwOkN6MHlFV1k2QTVPSHZXRWs0enlZ",
-            "Basic NjAzYmQxNzg5ZDg0NGY0NjRlN2Q3OTFhOmtTS1FsRnBVYlpKbWxwQTVRdWxt"})
+    @ValueSource(strings = {"NjAzYmQyY2E5ZDg0NGY0NjRlN2Q3OTJjOlFwYk1qakd4Q3NDdE5oODdhbHdJ",
+            "NjAzYmQwZjI5ZDg0NGY0NjRlN2Q3OTEwOkN6MHlFV1k2QTVPSHZXRWs0enlZ",
+            "NjAzYmQxNzg5ZDg0NGY0NjRlN2Q3OTFhOmtTS1FsRnBVYlpKbWxwQTVRdWxt"})
     void testBasicAuthCredentials(String headerValue) throws Exception {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setBasicAuth(headerValue);
