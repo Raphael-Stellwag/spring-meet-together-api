@@ -1,0 +1,23 @@
+[
+  {
+    "id": "603bd0f29d844f464e7d7910",
+    "name": "Raphi Firefox",
+    "password": "$2a$10$0Ev0SObMAM55Bo2ZYGPv2eQOH1TLTzVygIAitTTwQbkBV0nBe/S9S",
+    "registered": false,
+    "_class": "de.raphael.stellwag.spring.meettogether.entity.model.UserEntity"
+  },
+  {
+    "id": "603bd1789d844f464e7d791a",
+    "name": "Raphi Chrome",
+    "password": "$2a$10$G.PxDC5IhW9Q6Ah0HTM1JO9wt5UDZx3tBj8.BwMnUP2Y41Q2l0Y0C",
+    "registered": false,
+    "_class": "de.raphael.stellwag.spring.meettogether.entity.model.UserEntity"
+  },
+  {
+    "id": "603bd2ca9d844f464e7d792c",
+    "name": "Raphi Chrome Privat",
+    "password": "$2a$10$06etMOsnGTSqDuzPoLzgLugpA29YaHh1CRccVc2ezqo9TQcKaUnP.",
+    "registered": false,
+    "_class": "de.raphael.stellwag.spring.meettogether.entity.model.UserEntity"
+  }
+]

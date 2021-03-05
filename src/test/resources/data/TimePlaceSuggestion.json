@@ -1,0 +1,67 @@
+[
+  {
+    "id": "603bd1359d844f464e7d7914",
+    "eventId": "603bd1019d844f464e7d7911",
+    "startDate": "2025-08-20T16:21:16Z",
+    "endDate": "2025-08-22T16:21:16Z",
+    "place": "Berlin",
+    "link": "https://www.google.de/maps/place/Berlin/@52.5065133,13.1445563,10z/data=!3m1!4b1!4m5!3m4!1s0x47a84e373f035901:0x42120465b5e3b70!8m2!3d52.5200066!4d13.404954",
+    "_class": "de.raphael.stellwag.spring.meettogether.entity.model.TimePlaceSuggestionEntity"
+  },
+  {
+    "id": "603bd1569d844f464e7d7917",
+    "eventId": "603bd1019d844f464e7d7911",
+    "startDate": "2035-11-27T17:22:05Z",
+    "place": "Cool Barcelona",
+    "link": "https://www.google.de/maps/place/Barcelona,+Provinz+Barcelona,+Spanien/@41.3947688,2.0787281,12z/data=!3m1!4b1!4m5!3m4!1s0x12a49816718e30e5:0x44b0fb3d4f47660a!8m2!3d41.3850639!4d2.1734035",
+    "_class": "de.raphael.stellwag.spring.meettogether.entity.model.TimePlaceSuggestionEntity"
+  },
+  {
+    "id": "603bd1929d844f464e7d791e",
+    "eventId": "603bd1919d844f464e7d791b",
+    "startDate": "2029-11-22T17:23:21Z",
+    "endDate": "2029-11-23T17:23:21Z",
+    "place": "dsfsd",
+    "link": "xxcvxv",
+    "_class": "de.raphael.stellwag.spring.meettogether.entity.model.TimePlaceSuggestionEntity"
+  },
+  {
+    "id": "603bd2469d844f464e7d7925",
+    "eventId": "603bd22a9d844f464e7d7920",
+    "startDate": "2029-09-19T16:26:22Z",
+    "place": "sdfsdfsdsdf",
+    "link": "sdfsd",
+    "_class": "de.raphael.stellwag.spring.meettogether.entity.model.TimePlaceSuggestionEntity"
+  },
+  {
+    "id": "603bd2579d844f464e7d7928",
+    "eventId": "603bd22a9d844f464e7d7920",
+    "startDate": "2028-11-23T17:26:41Z",
+    "_class": "de.raphael.stellwag.spring.meettogether.entity.model.TimePlaceSuggestionEntity"
+  },
+  {
+    "id": "603bd3619d844f464e7d7934",
+    "eventId": "603bd2d89d844f464e7d792d",
+    "startDate": "2034-11-17T17:31:04Z",
+    "place": "dfgdf",
+    "link": "xc",
+    "_class": "de.raphael.stellwag.spring.meettogether.entity.model.TimePlaceSuggestionEntity"
+  },
+  {
+    "id": "603bd3739d844f464e7d7937",
+    "eventId": "603bd2d89d844f464e7d792d",
+    "startDate": "2050-11-27T17:31:21Z",
+    "place": "dffsf",
+    "link": "xcvv",
+    "_class": "de.raphael.stellwag.spring.meettogether.entity.model.TimePlaceSuggestionEntity"
+  },
+  {
+    "id": "603bd3879d844f464e7d793a",
+    "eventId": "603bd2d89d844f464e7d792d",
+    "startDate": "2027-03-15T17:31:37Z",
+    "endDate": "2027-03-15T18:31:37Z",
+    "place": "1 Hour meeting",
+    "link": "dsfdfs",
+    "_class": "de.raphael.stellwag.spring.meettogether.entity.model.TimePlaceSuggestionEntity"
+  }
+]

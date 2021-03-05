@@ -1,0 +1,68 @@
+[
+  {
+    "id": "603bd1369d844f464e7d7916",
+    "timePlaceSuggestionId": "603bd1359d844f464e7d7914",
+    "userId": "603bd0f29d844f464e7d7910",
+    "_class": "de.raphael.stellwag.spring.meettogether.entity.model.UserInTimePlaceSuggestionEntity"
+  },
+  {
+    "id": "603bd1569d844f464e7d7919",
+    "timePlaceSuggestionId": "603bd1569d844f464e7d7917",
+    "userId": "603bd0f29d844f464e7d7910",
+    "_class": "de.raphael.stellwag.spring.meettogether.entity.model.UserInTimePlaceSuggestionEntity"
+  },
+  {
+    "id": "603bd2479d844f464e7d7927",
+    "timePlaceSuggestionId": "603bd2469d844f464e7d7925",
+    "userId": "603bd1789d844f464e7d791a",
+    "_class": "de.raphael.stellwag.spring.meettogether.entity.model.UserInTimePlaceSuggestionEntity"
+  },
+  {
+    "id": "603bd2579d844f464e7d792a",
+    "timePlaceSuggestionId": "603bd2579d844f464e7d7928",
+    "userId": "603bd0f29d844f464e7d7910",
+    "_class": "de.raphael.stellwag.spring.meettogether.entity.model.UserInTimePlaceSuggestionEntity"
+  },
+  {
+    "id": "603bd2679d844f464e7d792b",
+    "timePlaceSuggestionId": "603bd2579d844f464e7d7928",
+    "userId": "603bd1789d844f464e7d791a",
+    "_class": "de.raphael.stellwag.spring.meettogether.entity.model.UserInTimePlaceSuggestionEntity"
+  },
+  {
+    "id": "603bd3619d844f464e7d7936",
+    "timePlaceSuggestionId": "603bd3619d844f464e7d7934",
+    "userId": "603bd0f29d844f464e7d7910",
+    "_class": "de.raphael.stellwag.spring.meettogether.entity.model.UserInTimePlaceSuggestionEntity"
+  },
+  {
+    "id": "603bd3749d844f464e7d7939",
+    "timePlaceSuggestionId": "603bd3739d844f464e7d7937",
+    "userId": "603bd0f29d844f464e7d7910",
+    "_class": "de.raphael.stellwag.spring.meettogether.entity.model.UserInTimePlaceSuggestionEntity"
+  },
+  {
+    "id": "603bd3889d844f464e7d793c",
+    "timePlaceSuggestionId": "603bd3879d844f464e7d793a",
+    "userId": "603bd0f29d844f464e7d7910",
+    "_class": "de.raphael.stellwag.spring.meettogether.entity.model.UserInTimePlaceSuggestionEntity"
+  },
+  {
+    "id": "603bd38d9d844f464e7d793d",
+    "timePlaceSuggestionId": "603bd3879d844f464e7d793a",
+    "userId": "603bd1789d844f464e7d791a",
+    "_class": "de.raphael.stellwag.spring.meettogether.entity.model.UserInTimePlaceSuggestionEntity"
+  },
+  {
+    "id": "603bd3909d844f464e7d793e",
+    "timePlaceSuggestionId": "603bd3739d844f464e7d7937",
+    "userId": "603bd1789d844f464e7d791a",
+    "_class": "de.raphael.stellwag.spring.meettogether.entity.model.UserInTimePlaceSuggestionEntity"
+  },
+  {
+    "id": "603bd3989d844f464e7d793f",
+    "timePlaceSuggestionId": "603bd3619d844f464e7d7934",
+    "userId": "603bd2ca9d844f464e7d792c",
+    "_class": "de.raphael.stellwag.spring.meettogether.entity.model.UserInTimePlaceSuggestionEntity"
+  }
+]

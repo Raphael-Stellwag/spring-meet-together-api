@@ -1,0 +1,152 @@
+[
+  {
+    "id": "603bd1019d844f464e7d7913",
+    "eventId": "603bd1019d844f464e7d7911",
+    "userId": "603bd0f29d844f464e7d7910",
+    "userName": "Raphi Firefox",
+    "date": "2021-02-28T17:21:05.332Z",
+    "content": "{\"id\":\"603bd1019d844f464e7d7911\",\"name\":\"Raphis Event\",\"description\":\"Desc\",\"accesstoken\":\"Raphis%20Event1614532854078770530380\",\"creator\":true,\"count_unread_messages\":0}",
+    "messageType": "EVENT_CREATED",
+    "_class": "de.raphael.stellwag.spring.meettogether.entity.model.MessageEntity"
+  },
+  {
+    "id": "603bd1369d844f464e7d7915",
+    "eventId": "603bd1019d844f464e7d7911",
+    "userId": "603bd0f29d844f464e7d7910",
+    "userName": "Raphi Firefox",
+    "date": "2021-02-28T17:21:58.040Z",
+    "content": "{\"id\":\"603bd1359d844f464e7d7914\",\"start_date\":\"2025-08-20T16:21:16\",\"end_date\":\"2025-08-22T16:21:16\",\"place\":\"Berlin\",\"link\":\"https://www.google.de/maps/place/Berlin/@52.5065133,13.1445563,10z/data=!3m1!4b1!4m5!3m4!1s0x47a84e373f035901:0x42120465b5e3b70!8m2!3d52.5200066!4d13.404954\"}",
+    "messageType": "TIME_PLACE_SUGGESTION_ADDED",
+    "_class": "de.raphael.stellwag.spring.meettogether.entity.model.MessageEntity"
+  },
+  {
+    "id": "603bd1569d844f464e7d7918",
+    "eventId": "603bd1019d844f464e7d7911",
+    "userId": "603bd0f29d844f464e7d7910",
+    "userName": "Raphi Firefox",
+    "date": "2021-02-28T17:22:30.651Z",
+    "content": "{\"id\":\"603bd1569d844f464e7d7917\",\"start_date\":\"2035-11-27T17:22:05\",\"place\":\"Cool Barcelona\",\"link\":\"https://www.google.de/maps/place/Barcelona,+Provinz+Barcelona,+Spanien/@41.3947688,2.0787281,12z/data=!3m1!4b1!4m5!3m4!1s0x12a49816718e30e5:0x44b0fb3d4f47660a!8m2!3d41.3850639!4d2.1734035\"}",
+    "messageType": "TIME_PLACE_SUGGESTION_ADDED",
+    "_class": "de.raphael.stellwag.spring.meettogether.entity.model.MessageEntity"
+  },
+  {
+    "id": "603bd1929d844f464e7d791d",
+    "eventId": "603bd1919d844f464e7d791b",
+    "userId": "603bd1789d844f464e7d791a",
+    "userName": "Raphi Chrome",
+    "date": "2021-02-28T17:23:30.057Z",
+    "content": "{\"id\":\"603bd1919d844f464e7d791b\",\"name\":\"Nomans Event\",\"description\":\"sdfsd\",\"accesstoken\":\"Nomans%20Event1614532988878463473687\",\"creator\":true,\"count_unread_messages\":0}",
+    "messageType": "EVENT_CREATED",
+    "_class": "de.raphael.stellwag.spring.meettogether.entity.model.MessageEntity"
+  },
+  {
+    "id": "603bd1929d844f464e7d791f",
+    "eventId": "603bd1919d844f464e7d791b",
+    "userId": "603bd1789d844f464e7d791a",
+    "userName": "Raphi Chrome",
+    "date": "2021-02-28T17:23:30.138Z",
+    "content": "{\"id\":\"603bd1929d844f464e7d791e\",\"event_id\":\"603bd1919d844f464e7d791b\",\"start_date\":\"2029-11-22T17:23:21\",\"end_date\":\"2029-11-23T17:23:21\",\"place\":\"dsfsd\",\"link\":\"xxcvxv\"}",
+    "messageType": "TIME_PLACE_SUGGESTION_CHOOSEN",
+    "_class": "de.raphael.stellwag.spring.meettogether.entity.model.MessageEntity"
+  },
+  {
+    "id": "603bd22a9d844f464e7d7922",
+    "eventId": "603bd22a9d844f464e7d7920",
+    "userId": "603bd0f29d844f464e7d7910",
+    "userName": "Raphi Firefox",
+    "date": "2021-02-28T17:26:02.485Z",
+    "content": "{\"id\":\"603bd22a9d844f464e7d7920\",\"name\":\"Easy_Event\",\"description\":\"sfd\",\"accesstoken\":\"Easy_Event1614533153218786062526\",\"creator\":true,\"count_unread_messages\":0}",
+    "messageType": "EVENT_CREATED",
+    "_class": "de.raphael.stellwag.spring.meettogether.entity.model.MessageEntity"
+  },
+  {
+    "id": "603bd2339d844f464e7d7924",
+    "eventId": "603bd22a9d844f464e7d7920",
+    "userId": "603bd1789d844f464e7d791a",
+    "userName": "Raphi Chrome",
+    "date": "2021-02-28T17:26:11.456Z",
+    "content": "{\"id\":\"603bd22a9d844f464e7d7920\",\"name\":\"Easy_Event\",\"description\":\"sfd\",\"accesstoken\":\"Easy_Event1614533153218786062526\",\"creator\":false,\"count_unread_messages\":0}",
+    "messageType": "USER_JOINED_EVENT",
+    "_class": "de.raphael.stellwag.spring.meettogether.entity.model.MessageEntity"
+  },
+  {
+    "id": "603bd2479d844f464e7d7926",
+    "eventId": "603bd22a9d844f464e7d7920",
+    "userId": "603bd1789d844f464e7d791a",
+    "userName": "Raphi Chrome",
+    "date": "2021-02-28T17:26:30.996Z",
+    "content": "{\"id\":\"603bd2469d844f464e7d7925\",\"start_date\":\"2029-09-19T16:26:22\",\"place\":\"sdfsdfsdsdf\",\"link\":\"sdfsd\"}",
+    "messageType": "TIME_PLACE_SUGGESTION_ADDED",
+    "_class": "de.raphael.stellwag.spring.meettogether.entity.model.MessageEntity"
+  },
+  {
+    "id": "603bd2579d844f464e7d7929",
+    "eventId": "603bd22a9d844f464e7d7920",
+    "userId": "603bd0f29d844f464e7d7910",
+    "userName": "Raphi Firefox",
+    "date": "2021-02-28T17:26:47.164Z",
+    "content": "{\"id\":\"603bd2579d844f464e7d7928\",\"start_date\":\"2028-11-23T17:26:41\"}",
+    "messageType": "TIME_PLACE_SUGGESTION_ADDED",
+    "_class": "de.raphael.stellwag.spring.meettogether.entity.model.MessageEntity"
+  },
+  {
+    "id": "603bd2d89d844f464e7d792f",
+    "eventId": "603bd2d89d844f464e7d792d",
+    "userId": "603bd2ca9d844f464e7d792c",
+    "userName": "Raphi Chrome Privat",
+    "date": "2021-02-28T17:28:56.595Z",
+    "content": "{\"id\":\"603bd2d89d844f464e7d792d\",\"name\":\"cool\",\"description\":\"sdidf\",\"accesstoken\":\"cool1614533325611751668827\",\"creator\":true,\"count_unread_messages\":0}",
+    "messageType": "EVENT_CREATED",
+    "_class": "de.raphael.stellwag.spring.meettogether.entity.model.MessageEntity"
+  },
+  {
+    "id": "603bd3239d844f464e7d7931",
+    "eventId": "603bd2d89d844f464e7d792d",
+    "userId": "603bd1789d844f464e7d791a",
+    "userName": "Raphi Chrome",
+    "date": "2021-02-28T17:30:11.427Z",
+    "content": "{\"id\":\"603bd2d89d844f464e7d792d\",\"name\":\"cool\",\"description\":\"sdidf\",\"accesstoken\":\"cool1614533325611751668827\",\"creator\":false,\"count_unread_messages\":0}",
+    "messageType": "USER_JOINED_EVENT",
+    "_class": "de.raphael.stellwag.spring.meettogether.entity.model.MessageEntity"
+  },
+  {
+    "id": "603bd3519d844f464e7d7933",
+    "eventId": "603bd2d89d844f464e7d792d",
+    "userId": "603bd0f29d844f464e7d7910",
+    "userName": "Raphi Firefox",
+    "date": "2021-02-28T17:30:57.075Z",
+    "content": "{\"id\":\"603bd2d89d844f464e7d792d\",\"name\":\"cool\",\"description\":\"sdidf\",\"accesstoken\":\"cool1614533325611751668827\",\"creator\":false,\"count_unread_messages\":0}",
+    "messageType": "USER_JOINED_EVENT",
+    "_class": "de.raphael.stellwag.spring.meettogether.entity.model.MessageEntity"
+  },
+  {
+    "id": "603bd3619d844f464e7d7935",
+    "eventId": "603bd2d89d844f464e7d792d",
+    "userId": "603bd0f29d844f464e7d7910",
+    "userName": "Raphi Firefox",
+    "date": "2021-02-28T17:31:13.108Z",
+    "content": "{\"id\":\"603bd3619d844f464e7d7934\",\"start_date\":\"2034-11-17T17:31:04\",\"place\":\"dfgdf\",\"link\":\"xc\"}",
+    "messageType": "TIME_PLACE_SUGGESTION_ADDED",
+    "_class": "de.raphael.stellwag.spring.meettogether.entity.model.MessageEntity"
+  },
+  {
+    "id": "603bd3739d844f464e7d7938",
+    "eventId": "603bd2d89d844f464e7d792d",
+    "userId": "603bd0f29d844f464e7d7910",
+    "userName": "Raphi Firefox",
+    "date": "2021-02-28T17:31:31.719Z",
+    "content": "{\"id\":\"603bd3739d844f464e7d7937\",\"start_date\":\"2050-11-27T17:31:21\",\"place\":\"dffsf\",\"link\":\"xcvv\"}",
+    "messageType": "TIME_PLACE_SUGGESTION_ADDED",
+    "_class": "de.raphael.stellwag.spring.meettogether.entity.model.MessageEntity"
+  },
+  {
+    "id": "603bd3879d844f464e7d793b",
+    "eventId": "603bd2d89d844f464e7d792d",
+    "userId": "603bd0f29d844f464e7d7910",
+    "userName": "Raphi Firefox",
+    "date": "2021-02-28T17:31:51.770Z",
+    "content": "{\"id\":\"603bd3879d844f464e7d793a\",\"start_date\":\"2027-03-15T17:31:37\",\"end_date\":\"2027-03-15T18:31:37\",\"place\":\"1 Hour meeting\",\"link\":\"dsfdfs\"}",
+    "messageType": "TIME_PLACE_SUGGESTION_ADDED",
+    "_class": "de.raphael.stellwag.spring.meettogether.entity.model.MessageEntity"
+  }
+]
