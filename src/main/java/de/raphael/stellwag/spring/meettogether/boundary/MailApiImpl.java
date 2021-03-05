@@ -31,7 +31,7 @@ public class MailApiImpl implements MailApi {
 
     @Override
     public ResponseEntity<MessageDto> sendMail(String eventId, @Valid MailDto mailBody) {
-        String userId = currentUser.getUserName();
+        String userId = currentUser.getUserId();
 
         if (!userInEventService.isUserInEvent(userId, eventId)) {
             throw new MeetTogetherException(MeetTogetherExceptionEnum.USER_NOT_IN_EVENT);

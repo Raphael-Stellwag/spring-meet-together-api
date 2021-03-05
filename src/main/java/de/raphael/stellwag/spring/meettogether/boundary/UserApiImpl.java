@@ -40,25 +40,19 @@ public class UserApiImpl implements UserApi {
     }
 
     @Override
-    public ResponseEntity<UserDto> registerUser(String userId, @Valid UserDto user) {
-        if (!userId.equals(currentUser.getUserName())) {
-            throw new MeetTogetherException(MeetTogetherExceptionEnum.NOT_ALLOWED);
-        }
+    public ResponseEntity<UserDto> registerUser(@Valid UserDto user) {
         if (userService.doesEmailExist(user.getEmail())) {
             throw new MeetTogetherException(MeetTogetherExceptionEnum.EMAIL_ALREADY_EXISTS);
         }
-        user.setId(userId);
+        user.setId(currentUser.getUserId());
         UserDto userDto = userService.registerUser(user);
         return ResponseEntity.ok(userDto);
     }
 
     @Override
-    public ResponseEntity<UserDto> renameUser(String userId, @Valid UserDto username) {
-        log.debug("User {} wants to rename to {}", userId, username.getName());
-        if (!userId.equals(currentUser.getUserName())) {
-            throw new MeetTogetherException(MeetTogetherExceptionEnum.NOT_ALLOWED);
-        }
-        UserDto userDto = userService.renameUser(userId, username.getName());
+    public ResponseEntity<UserDto> renameUser(@Valid UserDto username) {
+        log.debug("User {} wants to rename to {}", currentUser.getUserId(), username.getName());
+        UserDto userDto = userService.renameUser(currentUser.getUserId(), username.getName());
         return ResponseEntity.ok(userDto);
     }
 }

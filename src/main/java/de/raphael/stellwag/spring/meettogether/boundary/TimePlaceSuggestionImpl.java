@@ -37,7 +37,7 @@ public class TimePlaceSuggestionImpl implements TimePlaceSuggestionApi {
 
     @Override
     public ResponseEntity<TimePlaceSuggestionDto> addUserToTimePlaceSuggestion(String eventId, String timePlaceId, String userId) {
-        if (!userId.equals(currentUser.getUserName())) {
+        if (!userId.equals(currentUser.getUserId())) {
             throw new MeetTogetherException(MeetTogetherExceptionEnum.NOT_ALLOWED);
         }
         if (!userInEventService.isUserInEvent(userId, eventId)) {
@@ -53,7 +53,7 @@ public class TimePlaceSuggestionImpl implements TimePlaceSuggestionApi {
 
     @Override
     public ResponseEntity<TimePlaceSuggestionDto> createsTimePlaceSuggestions(String eventId, @Valid TimePlaceSuggestionDto timePlaceSuggestion) {
-        String userId = currentUser.getUserName();
+        String userId = currentUser.getUserId();
         if (!userInEventService.isUserInEvent(userId, eventId)) {
             throw new MeetTogetherException(MeetTogetherExceptionEnum.USER_NOT_IN_EVENT);
         }
@@ -67,7 +67,7 @@ public class TimePlaceSuggestionImpl implements TimePlaceSuggestionApi {
 
     @Override
     public ResponseEntity<TimePlaceSuggestionDto> deleteUserFromTimePlaceSuggestion(String eventId, String timePlaceId, String userId) {
-        if (!userId.equals(currentUser.getUserName())) {
+        if (!userId.equals(currentUser.getUserId())) {
             throw new MeetTogetherException(MeetTogetherExceptionEnum.NOT_ALLOWED);
         }
         if (!userInEventService.isUserInEvent(userId, eventId)) {
@@ -85,7 +85,7 @@ public class TimePlaceSuggestionImpl implements TimePlaceSuggestionApi {
 
     @Override
     public ResponseEntity<TimePlaceSuggestionsDto> getAllTimePlaceSuggestions(String eventId) {
-        String userId = currentUser.getUserName();
+        String userId = currentUser.getUserId();
         if (!userInEventService.isUserInEvent(userId, eventId)) {
             throw new MeetTogetherException(MeetTogetherExceptionEnum.USER_NOT_IN_EVENT);
         }
@@ -96,7 +96,7 @@ public class TimePlaceSuggestionImpl implements TimePlaceSuggestionApi {
 
     @Override
     public ResponseEntity<EventDto> timePlaceSuggestionChoosen(String eventId, String timePlaceId, String userId) {
-        if (!userId.equals(currentUser.getUserName())) {
+        if (!userId.equals(currentUser.getUserId())) {
             throw new MeetTogetherException(MeetTogetherExceptionEnum.NOT_ALLOWED);
         }
         if (!eventService.hasUserCreatedEvent(userId, eventId)) {

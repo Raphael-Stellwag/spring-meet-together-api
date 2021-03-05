@@ -2,6 +2,8 @@ package de.raphael.stellwag.spring.meettogether.security.control;
 
 import de.raphael.stellwag.spring.meettogether.entity.dao.UserRepository;
 import de.raphael.stellwag.spring.meettogether.entity.model.UserEntity;
+import de.raphael.stellwag.spring.meettogether.error.MeetTogetherException;
+import de.raphael.stellwag.spring.meettogether.error.MeetTogetherExceptionEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
@@ -12,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Base64;
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -38,6 +41,7 @@ public class MyUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) {
         log.info("Got called");
 
+        List<UserEntity> all = userRepository.findAll();
         Optional<UserEntity> optionalUserEntity = userRepository.findById(username);
 
         if (optionalUserEntity.isEmpty()) {
@@ -61,19 +65,29 @@ public class MyUserDetailsService implements UserDetailsService {
     }
 
     public UserDetails getUserDetailsFromBasicAuth(String authorization) {
-        Base64.Decoder decoder = Base64.getDecoder();
+
         if (authorization.length() < 7) {
-            throw new RuntimeException("Not a Basic Authentification");
+            throw new MeetTogetherException(MeetTogetherExceptionEnum.USER_NOT_AUTHORIZED);
         }
+
         authorization = authorization.substring(6);
-        byte[] test = decoder.decode(authorization);
-        authorization = new String(test);
+
+        byte[] base64BasicAuth;
+        try {
+            Base64.Decoder decoder = Base64.getDecoder();
+            base64BasicAuth = decoder.decode(authorization);
+        } catch (IllegalArgumentException e) {
+            log.warn("Could not decode a basic auth string", e);
+            throw new MeetTogetherException(MeetTogetherExceptionEnum.USER_NOT_AUTHORIZED);
+        }
+
+        authorization = new String(base64BasicAuth);
 
         if (!authorization.contains(":")) {
-            throw new RuntimeException("Not a Basic Authentification");
+            throw new MeetTogetherException(MeetTogetherExceptionEnum.USER_NOT_AUTHORIZED);
         }
 
-        String userId = authorization.substring(0,authorization.indexOf(":"));
+        String userId = authorization.substring(0, authorization.indexOf(":"));
         String password = authorization.substring(authorization.indexOf(":") + 1);
         return User.withUsername(userId).password(password).authorities("USER").build();
     }

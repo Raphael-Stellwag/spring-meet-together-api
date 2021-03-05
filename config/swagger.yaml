@@ -89,19 +89,12 @@ paths:
         - jwtToken: [ ]
       x-swagger-router-controller: User
       x-codegen-request-body-name: user
-  /api/v1/user/{userId}/register:
+  /api/v1/register:
     put:
       tags:
         - user
-      summary: user decided to register an account (with password)
+      summary: user decided to register an account (with password), he had an account without registration before
       operationId: registerUser
-      parameters:
-        - name: userId
-          in: path
-          description: ID of user to return
-          required: true
-          schema:
-            type: string
       requestBody:
         description: user object with name, email and password property
         content:
@@ -129,20 +122,13 @@ paths:
         - jwtToken: [ ]
       x-swagger-router-controller: User
       x-codegen-request-body-name: user
-  /api/v1/user/{userId}/rename:
+  /api/v1/rename:
     put:
       tags:
         - user
       summary: changes the name of a user
       description: Returns a single user
       operationId: renameUser
-      parameters:
-        - name: userId
-          in: path
-          description: ID of user to return
-          required: true
-          schema:
-            type: string
       requestBody:
         description: user object just with name property
         content:

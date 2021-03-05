@@ -46,7 +46,7 @@ public class EventApiImpl implements EventApi {
     @Override
     @Transactional
     public ResponseEntity<EventDto> addEvent(String userId, @Valid EventDto body) {
-        if (!userId.equals(currentUser.getUserName())) {
+        if (!userId.equals(currentUser.getUserId())) {
             throw new MeetTogetherException(MeetTogetherExceptionEnum.NOT_ALLOWED);
         }
         EventDto newEvent = eventService.createNewEvent(userId, body);
@@ -62,7 +62,7 @@ public class EventApiImpl implements EventApi {
 
     @Override
     public ResponseEntity<EventDto> addUserToEvent(String userId, String eventId, @NotNull @Valid String accesstoken) {
-        if (!userId.equals(currentUser.getUserName()) ||
+        if (!userId.equals(currentUser.getUserId()) ||
                 !eventService.isAccessTokenCorrect(eventId, accesstoken)) {
             throw new MeetTogetherException(MeetTogetherExceptionEnum.NOT_ALLOWED);
         }
@@ -76,7 +76,7 @@ public class EventApiImpl implements EventApi {
 
     @Override
     public ResponseEntity<Void> deleteEvent(String userId, String eventId) {
-        if (!userId.equals(currentUser.getUserName()) ||
+        if (!userId.equals(currentUser.getUserId()) ||
                 !eventService.hasUserCreatedEvent(userId, eventId)) {
             throw new MeetTogetherException(MeetTogetherExceptionEnum.NOT_ALLOWED);
         }
@@ -87,7 +87,7 @@ public class EventApiImpl implements EventApi {
     @Override
     public ResponseEntity<Void> deleteUserFromEvent(String userId, String eventId) {
         log.info("Delete user {} from event {}", userId, eventId);
-        if (!userId.equals(currentUser.getUserName())) {
+        if (!userId.equals(currentUser.getUserId())) {
             throw new MeetTogetherException(MeetTogetherExceptionEnum.NOT_ALLOWED);
         }
         userInEventService.deleteUserFromEvent(userId, eventId);
@@ -99,7 +99,7 @@ public class EventApiImpl implements EventApi {
 
     @Override
     public ResponseEntity<ParticipantsDto> getAllParticipants(String eventId) {
-        String userId = currentUser.getUserName();
+        String userId = currentUser.getUserId();
         if (!userInEventService.isUserInEvent(userId, eventId)) {
             throw new MeetTogetherException(MeetTogetherExceptionEnum.USER_NOT_IN_EVENT);
         }
@@ -109,7 +109,7 @@ public class EventApiImpl implements EventApi {
 
     @Override
     public ResponseEntity<EventsDto> getEvents(String userId) {
-        if (!userId.equals(currentUser.getUserName())) {
+        if (!userId.equals(currentUser.getUserId())) {
             throw new MeetTogetherException(MeetTogetherExceptionEnum.NOT_ALLOWED);
         }
         EventsDto eventDtos = eventService.getEvents(userId);
@@ -118,7 +118,7 @@ public class EventApiImpl implements EventApi {
 
     @Override
     public ResponseEntity<EventDto> updateEvent(String userId, String eventId, @Valid EventDto eventData) {
-        if (!userId.equals(currentUser.getUserName()) ||
+        if (!userId.equals(currentUser.getUserId()) ||
                 !eventService.hasUserCreatedEvent(userId, eventId) ||
                 !eventData.getId().equals(eventId)) {
             throw new MeetTogetherException(MeetTogetherExceptionEnum.NOT_ALLOWED);

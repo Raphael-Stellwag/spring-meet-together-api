@@ -20,7 +20,8 @@ public enum MeetTogetherExceptionEnum {
     USER_NOT_IN_TIME_PLACE_SUGGESTION(HttpStatus.CONFLICT, "User is not in TimePlace Suggestion"),
     USER_NOT_CREATOR_OF_EVENT(HttpStatus.FORBIDDEN, "You are not the creator of the event"),
     TIME_PLACE_SUGGESTION_BELONGS_NOT_TO_EVENT(HttpStatus.CONFLICT, "TimePlace Suggestion belongs not to this event"),
-    TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "The provided token is expired");
+    TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "The provided token is expired"),
+    USER_NOT_AUTHORIZED(HttpStatus.UNAUTHORIZED, "You didn't provide a valid authorization header");
 
     private final HttpStatus httpStatus;
     private final String message;

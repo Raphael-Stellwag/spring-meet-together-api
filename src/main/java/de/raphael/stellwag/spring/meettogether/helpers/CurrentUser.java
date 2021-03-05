@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class CurrentUser {
 
-    public String getUserName() {
+    public String getUserId() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (!(auth instanceof AnonymousAuthenticationToken)) {
             UserDetails userPrincipal = (UserDetails) auth.getPrincipal();

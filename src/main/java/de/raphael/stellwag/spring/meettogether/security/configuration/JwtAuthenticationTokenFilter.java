@@ -1,5 +1,6 @@
 package de.raphael.stellwag.spring.meettogether.security.configuration;
 
+import de.raphael.stellwag.spring.meettogether.error.MeetTogetherException;
 import de.raphael.stellwag.spring.meettogether.security.control.MyUserDetailsService;
 import de.raphael.stellwag.spring.meettogether.security.helpers.JwtTokenUtil;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -40,10 +41,19 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
         log.info("Request is getting filtered {}: {}", request.getMethod(), request.getRequestURI());
 
-        authenticateJwtToken(request, requestTokenHeader);
-        authenticateBasicAuth(request, requestTokenHeader);
+        int errorStatus = -1;
+        try {
+            authenticateJwtToken(request, requestTokenHeader);
+            authenticateBasicAuth(request, requestTokenHeader);
+        } catch (MeetTogetherException meetTogetherException) {
+            errorStatus = meetTogetherException.getMeetTogetherExceptionEnum().getHttpStatus().value();
+            response.setStatus(errorStatus);
+        }
 
-        chain.doFilter(request, response);
+        if (errorStatus != response.getStatus()) {
+            chain.doFilter(request, response);
+        }
+
     }
 
     private void authenticateBasicAuth(HttpServletRequest request, String requestTokenHeader) {

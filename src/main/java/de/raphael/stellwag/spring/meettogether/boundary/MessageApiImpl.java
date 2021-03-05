@@ -32,7 +32,7 @@ public class MessageApiImpl implements MessageApi {
 
     @Override
     public ResponseEntity<MessageDto> addMessage(String eventId, String userId, @Valid MessageDto message) {
-        if (!userId.equals(currentUser.getUserName())) {
+        if (!userId.equals(currentUser.getUserId())) {
             throw new MeetTogetherException(MeetTogetherExceptionEnum.NOT_ALLOWED);
         }
         if (!userInEventService.isUserInEvent(userId, eventId)) {
@@ -47,7 +47,7 @@ public class MessageApiImpl implements MessageApi {
     @Override
     public ResponseEntity<MessagesDto> getMessages(String eventId, @Valid String count, @Valid String lastMessage, @Valid String direction) {
 
-        String userId = currentUser.getUserName();
+        String userId = currentUser.getUserId();
 
         if (!userInEventService.isUserInEvent(userId, eventId)) {
             throw new MeetTogetherException(MeetTogetherExceptionEnum.USER_NOT_IN_EVENT);
