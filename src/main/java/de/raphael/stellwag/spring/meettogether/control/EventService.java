@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -50,7 +51,9 @@ public class EventService {
         log.info(eventData.toString());
         EventEntity newEntity = dtoToEntity.getEventEntity(eventData);
         newEntity.setCreatorId(userId);
+        newEntity.setAccesstoken(UUID.randomUUID().toString());
         EventEntity writtenEntity = this.eventRepository.insert(newEntity);
+
 
         userInEventService.addUserToEvent(userId, writtenEntity.getId());
 
