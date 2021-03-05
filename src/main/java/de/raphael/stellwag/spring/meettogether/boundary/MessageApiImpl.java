@@ -31,10 +31,8 @@ public class MessageApiImpl implements MessageApi {
     }
 
     @Override
-    public ResponseEntity<MessageDto> addMessage(String eventId, String userId, @Valid MessageDto message) {
-        if (!userId.equals(currentUser.getUserId())) {
-            throw new MeetTogetherException(MeetTogetherExceptionEnum.NOT_ALLOWED);
-        }
+    public ResponseEntity<MessageDto> addMessage(String eventId, @Valid MessageDto message) {
+        String userId = currentUser.getUserId();
         if (!userInEventService.isUserInEvent(userId, eventId)) {
             throw new MeetTogetherException(MeetTogetherExceptionEnum.USER_NOT_IN_EVENT);
         }

@@ -45,27 +45,24 @@ public class EventApiImpl implements EventApi {
 
     @Override
     @Transactional
-    public ResponseEntity<EventDto> addEvent(String userId, @Valid EventDto body) {
-        if (!userId.equals(currentUser.getUserId())) {
-            throw new MeetTogetherException(MeetTogetherExceptionEnum.NOT_ALLOWED);
-        }
-        EventDto newEvent = eventService.createNewEvent(userId, body);
-        messageService.sendGeneratedMessage(MessageTypeEnum.EVENT_CREATED, newEvent.getId(), userId, newEvent);
+    public ResponseEntity<EventDto> addEvent(@Valid EventDto body) {
+        EventDto newEvent = eventService.createNewEvent(currentUser.getUserId(), body);
+        messageService.sendGeneratedMessage(MessageTypeEnum.EVENT_CREATED, newEvent.getId(), currentUser.getUserId(), newEvent);
 
         if (body.getStartDate() != null) {
             newEvent = timePlaceSuggestionService.createTimePlaceSuggestionFromEventDto
-                    (newEvent.getId(), userId, body);
+                    (newEvent.getId(), currentUser.getUserId(), body);
         }
 
         return ResponseEntity.created(URI.create("/api/v1/events/" + newEvent.getId())).body(newEvent);
     }
 
     @Override
-    public ResponseEntity<EventDto> addUserToEvent(String userId, String eventId, @NotNull @Valid String accesstoken) {
-        if (!userId.equals(currentUser.getUserId()) ||
-                !eventService.isAccessTokenCorrect(eventId, accesstoken)) {
+    public ResponseEntity<EventDto> addUserToEvent(String eventId, @NotNull @Valid String accesstoken) {
+        if (!eventService.isAccessTokenCorrect(eventId, accesstoken)) {
             throw new MeetTogetherException(MeetTogetherExceptionEnum.NOT_ALLOWED);
         }
+        String userId = currentUser.getUserId();
         userInEventService.addUserToEvent(userId, eventId);
         EventDto eventDto = eventService.getEvent(eventId, userId);
 
@@ -75,9 +72,8 @@ public class EventApiImpl implements EventApi {
     }
 
     @Override
-    public ResponseEntity<Void> deleteEvent(String userId, String eventId) {
-        if (!userId.equals(currentUser.getUserId()) ||
-                !eventService.hasUserCreatedEvent(userId, eventId)) {
+    public ResponseEntity<Void> deleteEvent(String eventId) {
+        if (!eventService.hasUserCreatedEvent(currentUser.getUserId(), eventId)) {
             throw new MeetTogetherException(MeetTogetherExceptionEnum.NOT_ALLOWED);
         }
         eventService.deleteEvent(eventId);
@@ -85,11 +81,10 @@ public class EventApiImpl implements EventApi {
     }
 
     @Override
-    public ResponseEntity<Void> deleteUserFromEvent(String userId, String eventId) {
+    public ResponseEntity<Void> deleteUserFromEvent(String eventId) {
+        String userId = currentUser.getUserId();
+
         log.info("Delete user {} from event {}", userId, eventId);
-        if (!userId.equals(currentUser.getUserId())) {
-            throw new MeetTogetherException(MeetTogetherExceptionEnum.NOT_ALLOWED);
-        }
         userInEventService.deleteUserFromEvent(userId, eventId);
 
         messageService.sendGeneratedMessage(MessageTypeEnum.USER_LEFT_EVENT, eventId, userId, new Object());
@@ -108,18 +103,15 @@ public class EventApiImpl implements EventApi {
     }
 
     @Override
-    public ResponseEntity<EventsDto> getEvents(String userId) {
-        if (!userId.equals(currentUser.getUserId())) {
-            throw new MeetTogetherException(MeetTogetherExceptionEnum.NOT_ALLOWED);
-        }
-        EventsDto eventDtos = eventService.getEvents(userId);
+    public ResponseEntity<EventsDto> getEvents() {
+        EventsDto eventDtos = eventService.getEvents(currentUser.getUserId());
         return ResponseEntity.ok(eventDtos);
     }
 
     @Override
-    public ResponseEntity<EventDto> updateEvent(String userId, String eventId, @Valid EventDto eventData) {
-        if (!userId.equals(currentUser.getUserId()) ||
-                !eventService.hasUserCreatedEvent(userId, eventId) ||
+    public ResponseEntity<EventDto> updateEvent(String eventId, @Valid EventDto eventData) {
+        String userId = currentUser.getUserId();
+        if (!eventService.hasUserCreatedEvent(userId, eventId) ||
                 !eventData.getId().equals(eventId)) {
             throw new MeetTogetherException(MeetTogetherExceptionEnum.NOT_ALLOWED);
         }

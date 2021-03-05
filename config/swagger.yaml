@@ -153,19 +153,12 @@ paths:
         - jwtToken: [ ]
       x-swagger-router-controller: User
       x-codegen-request-body-name: username
-  /api/v1/user/{userId}/event:
+  /api/v1/event:
     get:
       tags:
         - event
       summary: get all events of a user
       operationId: getEvents
-      parameters:
-        - name: userId
-          in: path
-          description: ID of user who creates the new event
-          required: true
-          schema:
-            type: string
       responses:
         200:
           description: successful operation
@@ -187,13 +180,6 @@ paths:
         - event
       summary: creates a new event
       operationId: addEvent
-      parameters:
-        - name: userId
-          in: path
-          description: ID of user who creates the new event
-          required: true
-          schema:
-            type: string
       requestBody:
         description: Event data to store in database
         content:
@@ -221,19 +207,13 @@ paths:
         - jwtToken: [ ]
       x-swagger-router-controller: Event
       x-codegen-request-body-name: body
-  /api/v1/user/{userId}/event/{eventId}:
+  /api/v1/event/{eventId}:
     put:
       tags:
         - event
       summary: updates an existing event
       operationId: updateEvent
       parameters:
-        - name: userId
-          in: path
-          description: ID of user who has created the existing event
-          required: true
-          schema:
-            type: string
         - name: eventId
           in: path
           description: ID of event which needs to be updated
@@ -273,12 +253,6 @@ paths:
       summary: deletes the existing event
       operationId: deleteEvent
       parameters:
-        - name: userId
-          in: path
-          description: ID of user who has created the existing event
-          required: true
-          schema:
-            type: string
         - name: eventId
           in: path
           description: ID of event which needs to be deleted
@@ -300,19 +274,13 @@ paths:
       security:
         - jwtToken: [ ]
       x-swagger-router-controller: Event
-  /api/v1/event/{eventId}/user/{userId}:
-    put:
+  /api/v1/event/{eventId}/user:
+    post:
       tags:
         - event
       summary: Add an User to the event
       operationId: addUserToEvent
       parameters:
-        - name: userId
-          in: path
-          description: ID of user who has created the existing event
-          required: true
-          schema:
-            type: string
         - name: eventId
           in: path
           description: ID of event which needs to be updated
@@ -352,12 +320,6 @@ paths:
         of the event
       operationId: deleteUserFromEvent
       parameters:
-        - name: userId
-          in: path
-          description: ID of user who has created the existing event
-          required: true
-          schema:
-            type: string
         - name: eventId
           in: path
           description: ID of event which needs to be updated
@@ -474,7 +436,7 @@ paths:
         - jwtToken: [ ]
       x-swagger-router-controller: TimePlaceSuggestion
       x-codegen-request-body-name: timePlaceSuggestion
-  /api/v1/event/{eventId}/time-place-suggestion/{timePlaceId}/user/{userId}:
+  /api/v1/event/{eventId}/time-place-suggestion/{timePlaceId}/user:
     put:
       tags:
         - time place suggestion
@@ -490,12 +452,6 @@ paths:
         - name: timePlaceId
           in: path
           description: ID of time-place suggestion
-          required: true
-          schema:
-            type: string
-        - name: userId
-          in: path
-          description: ID of user
           required: true
           schema:
             type: string
@@ -537,12 +493,6 @@ paths:
           required: true
           schema:
             type: string
-        - name: userId
-          in: path
-          description: ID of user
-          required: true
-          schema:
-            type: string
       responses:
         200:
           description: successful operation
@@ -562,7 +512,7 @@ paths:
       security:
         - jwtToken: [ ]
       x-swagger-router-controller: TimePlaceSuggestion
-  /api/v1/event/{eventId}/time-place-suggestion/{timePlaceId}/user/{userId}/choosen:
+  /api/v1/event/{eventId}/time-place-suggestion/{timePlaceId}/choosen:
     put:
       tags:
         - time place suggestion
@@ -579,12 +529,6 @@ paths:
         - name: timePlaceId
           in: path
           description: ID of time-place suggestion
-          required: true
-          schema:
-            type: string
-        - name: userId
-          in: path
-          description: ID of user
           required: true
           schema:
             type: string
@@ -610,7 +554,7 @@ paths:
       security:
         - jwtToken: [ ]
       x-swagger-router-controller: TimePlaceSuggestion
-  /api/v1/event/{eventId}/messages:
+  /api/v1/event/{eventId}/message:
     get:
       tags:
         - message
@@ -658,7 +602,6 @@ paths:
       security:
         - jwtToken: [ ]
       x-swagger-router-controller: Message
-  /api/v1/event/{eventId}/user/{userId}/message:
     post:
       tags:
         - message
@@ -668,12 +611,6 @@ paths:
         - name: eventId
           in: path
           description: ID of event
-          required: true
-          schema:
-            type: string
-        - name: userId
-          in: path
-          description: ID of User
           required: true
           schema:
             type: string

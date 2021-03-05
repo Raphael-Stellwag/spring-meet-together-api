@@ -36,10 +36,8 @@ public class TimePlaceSuggestionImpl implements TimePlaceSuggestionApi {
     }
 
     @Override
-    public ResponseEntity<TimePlaceSuggestionDto> addUserToTimePlaceSuggestion(String eventId, String timePlaceId, String userId) {
-        if (!userId.equals(currentUser.getUserId())) {
-            throw new MeetTogetherException(MeetTogetherExceptionEnum.NOT_ALLOWED);
-        }
+    public ResponseEntity<TimePlaceSuggestionDto> addUserToTimePlaceSuggestion(String eventId, String timePlaceId) {
+        String userId = currentUser.getUserId();
         if (!userInEventService.isUserInEvent(userId, eventId)) {
             throw new MeetTogetherException(MeetTogetherExceptionEnum.USER_NOT_IN_EVENT);
         }
@@ -66,10 +64,8 @@ public class TimePlaceSuggestionImpl implements TimePlaceSuggestionApi {
     }
 
     @Override
-    public ResponseEntity<TimePlaceSuggestionDto> deleteUserFromTimePlaceSuggestion(String eventId, String timePlaceId, String userId) {
-        if (!userId.equals(currentUser.getUserId())) {
-            throw new MeetTogetherException(MeetTogetherExceptionEnum.NOT_ALLOWED);
-        }
+    public ResponseEntity<TimePlaceSuggestionDto> deleteUserFromTimePlaceSuggestion(String eventId, String timePlaceId) {
+        String userId = currentUser.getUserId();
         if (!userInEventService.isUserInEvent(userId, eventId)) {
             throw new MeetTogetherException(MeetTogetherExceptionEnum.USER_NOT_IN_EVENT);
         }
@@ -95,10 +91,8 @@ public class TimePlaceSuggestionImpl implements TimePlaceSuggestionApi {
     }
 
     @Override
-    public ResponseEntity<EventDto> timePlaceSuggestionChoosen(String eventId, String timePlaceId, String userId) {
-        if (!userId.equals(currentUser.getUserId())) {
-            throw new MeetTogetherException(MeetTogetherExceptionEnum.NOT_ALLOWED);
-        }
+    public ResponseEntity<EventDto> timePlaceSuggestionChoosen(String eventId, String timePlaceId) {
+        String userId = currentUser.getUserId();
         if (!eventService.hasUserCreatedEvent(userId, eventId)) {
             throw new MeetTogetherException(MeetTogetherExceptionEnum.USER_NOT_CREATOR_OF_EVENT);
         }
