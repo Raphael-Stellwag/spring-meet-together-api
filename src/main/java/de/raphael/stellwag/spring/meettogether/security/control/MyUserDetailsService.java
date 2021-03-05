@@ -14,7 +14,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Base64;
-import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -41,7 +40,6 @@ public class MyUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) {
         log.info("Got called");
 
-        List<UserEntity> all = userRepository.findAll();
         Optional<UserEntity> optionalUserEntity = userRepository.findById(username);
 
         if (optionalUserEntity.isEmpty()) {

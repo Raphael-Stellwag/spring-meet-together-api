@@ -13,7 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @SpringBootTest(classes = SpringMeetTogetherApiApplication.class,
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class PingApiImplTests {
+class PingApiImplTests {
 
     @Autowired
     private MockMvc mockMvc;
